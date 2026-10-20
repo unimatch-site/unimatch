@@ -191,7 +191,7 @@
       <footer class="site-footer">
         <div class="card">
           <h2>Sobre o projeto</h2>
-          <p>O UniMatch é um projeto de extensão do IME-USP, parte do grupo Integra, voltado para
+          <p>O UniMatch é um projeto do grupo Integra, voltado para
             estudantes de escolas públicas. O objetivo é diminuir a desigualdade de informação na hora
             de escolher um curso. <a href="#/sobre">Saiba mais e veja as fontes dos dados</a>.</p>
         </div>
@@ -465,7 +465,7 @@
     const href = SITE_CONFIG.formularioVeteranos
       ? safeUrl(SITE_CONFIG.formularioVeteranos)
       : "mailto:" + esc(SITE_CONFIG.contatoEmail) + "?subject=" + encodeURIComponent("Quero ser veterano(a) mentor(a) no UniMatch");
-    return `<a href="${href}"${externalAttrs(href)}>É estudante da USP e quer ser mentor(a)? Cadastre-se.</a>`;
+    return `<a href="${href}"${externalAttrs(href)}>É universitário(a) e quer ser mentor(a)? Cadastre-se.</a>`;
   }
 
   function renderVeteransSection(courseNames) {
@@ -736,9 +736,7 @@
       <section class="card">
         <h2 class="section-title">🎓 O projeto</h2>
         <p class="muted">O UniMatch é uma plataforma gratuita de orientação vocacional para estudantes de escolas
-          públicas que estão se preparando para o ENEM e os vestibulares. É um projeto de extensão do IME-USP e
-          faz parte do <strong>Integra</strong>, grupo dedicado a projetos de democratização e inclusão do acesso
-          ao conhecimento.</p>
+          públicas que estão se preparando para o ENEM e os vestibulares. O UniMatch faz parte do <strong>Integra</strong>, grupo dedicado ao desenvolvimento de projetos de democratização e inclusão do acesso ao conhecimento.</p>
         <p class="muted" style="margin-top:10px">Muitos estudantes chegam à inscrição sem conhecer bem os cursos,
           o mercado de trabalho e as notas de corte. O UniMatch reúne dados públicos para ajudar nessa escolha.</p>
       </section>
