@@ -49,7 +49,7 @@
  *   atribuição feita por mim (Claude) a partir das características típicas
  *   de cada área -- não vêm de uma base de dados validada especificamente
  *   pra cursos da USP. Antes de confiar 100% nisso, valeria ter alguém da
- *   Psicologia (ex: do Instituto de Psicologia da USP) revisando os códigos.
+ *   Psicologia revisando os códigos.
  * - Cobertura testada e comprovada (não é só afirmação): rodei
  *   tests/coverage-test.js simulando ~9 mil perfis de resposta diferentes.
  *   Resultado: os 98 cursos conseguem aparecer em #1 para pelo menos um
@@ -77,7 +77,7 @@ const DATA_LAST_REVIEWED = "";
 
 // Configurações gerais do site (contato, redes). Edite aqui, não no HTML.
 const SITE_CONFIG = {
-  contatoEmail: "gabrielcrod14@usp.br",
+  contatoEmail: "gabrielcrod14@gmail.com",
   instagram: "https://www.instagram.com/integrausp/",
   // Link de um formulário (ex: Google Forms) para "Reportar problema /
   // Sugestões". Enquanto estiver vazio, o botão abre o app de e-mail.
