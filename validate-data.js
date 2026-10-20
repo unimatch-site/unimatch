@@ -20,7 +20,7 @@ const code = fs.readFileSync(dataPath, "utf8");
 
 const sandbox = {};
 vm.createContext(sandbox);
-const exportLine = "\nglobalThis.__EXPORTS__ = { QUESTIONS, COURSES, REGION_FACTORS, REGION_LABELS };";
+const exportLine = "\nglobalThis.__EXPORTS__ = { QUESTIONS, COURSES, SITE_CONFIG, COURSE_EXTRAS, VETERANS, MENTORIAS };";
 try {
   vm.runInContext(code + exportLine, sandbox);
 } catch (err) {
@@ -28,7 +28,7 @@ try {
   process.exit(1);
 }
 
-const { COURSES, QUESTIONS, REGION_FACTORS, REGION_LABELS } = sandbox.__EXPORTS__;
+const { COURSES, QUESTIONS, SITE_CONFIG, COURSE_EXTRAS, VETERANS, MENTORIAS } = sandbox.__EXPORTS__;
 let errors = 0;
 let warnings = 0;
 
@@ -52,16 +52,10 @@ if (!Array.isArray(QUESTIONS) || QUESTIONS.length === 0) {
   });
 }
 
-// ── Checagens de REGION_FACTORS ──
-const expectedRegions = ["sudeste", "sul", "centroOeste", "nordeste", "norte"];
-expectedRegions.forEach((r) => {
-  if (typeof REGION_FACTORS[r] !== "number") {
-    fail(`REGION_FACTORS.${r} está faltando ou não é número.`);
-  } else if (REGION_FACTORS[r] < 0.5 || REGION_FACTORS[r] > 1.2) {
-    warn(`REGION_FACTORS.${r} = ${REGION_FACTORS[r]} está fora da faixa plausível (0.5–1.2). Confira se não é erro de digitação.`);
-  }
-  if (!REGION_LABELS[r]) fail(`REGION_LABELS.${r} está faltando.`);
-});
+// ── Checagens de SITE_CONFIG ──
+if (!SITE_CONFIG || !SITE_CONFIG.contatoEmail) {
+  fail("SITE_CONFIG.contatoEmail está faltando (é o e-mail de contato do rodapé).");
+}
 
 // ── Checagens de COURSES ──
 const requiredFields = ["vec", "area", "desc", "carreiras", "fuvest", "notaSISU", "sal", "salMid", "emp", "empScore", "dem", "dur", "tags"];
@@ -138,6 +132,43 @@ names.forEach((name) => {
   if (![4, 5, 6].includes(dur)) {
     warn(`"${name}": dur = "${c.dur}" é incomum (esperado 4, 5 ou 6).`);
   }
+});
+
+// ── Checagens de COURSE_EXTRAS ──
+const isUrl = (u) => typeof u === "string" && /^https?:\/\//.test(u);
+Object.keys(COURSE_EXTRAS || {}).forEach((name) => {
+  const x = COURSE_EXTRAS[name];
+  if (!COURSES[name]) fail(`COURSE_EXTRAS: "${name}" não existe em COURSES (confira o nome exato).`);
+  ["provaoPaulista", "olimpiadas"].forEach((k) => {
+    if (x[k] === undefined) return;
+    if (!x[k].texto) fail(`COURSE_EXTRAS "${name}": ${k}.texto está vazio.`);
+    if (!isUrl(x[k].fonte)) warn(`COURSE_EXTRAS "${name}": ${k} está sem link de fonte (fonte: "https://...").`);
+  });
+  if (x.ondeEstudar !== undefined && (!Array.isArray(x.ondeEstudar) || x.ondeEstudar.some((u) => !u.nome))) {
+    fail(`COURSE_EXTRAS "${name}": ondeEstudar deve ser uma lista de { nome, obs }.`);
+  }
+});
+
+// ── Checagens de VETERANS (LGPD: nada de contato pessoal no arquivo público) ──
+const emailLike = /[\w.+-]+@[\w-]+\.[\w.]+/;
+(VETERANS || []).forEach((v, i) => {
+  const who = `VETERANS #${i + 1} (${v.nome || "sem nome"})`;
+  if (!v.nome) fail(`${who}: nome está faltando.`);
+  if (!COURSES[v.curso]) fail(`${who}: curso "${v.curso}" não existe em COURSES.`);
+  if (!v.linkedin && !v.formulario) warn(`${who}: sem LinkedIn nem formulário, o card não terá botão de contato.`);
+  if (v.linkedin && !isUrl(v.linkedin)) fail(`${who}: linkedin precisa começar com https://`);
+  if (v.formulario && !isUrl(v.formulario)) fail(`${who}: formulario precisa começar com https://`);
+  if (v.email || v.telefone || emailLike.test(JSON.stringify(v))) {
+    fail(`${who}: parece ter e-mail ou telefone pessoal. Não coloque contato pessoal aqui (o arquivo é público).`);
+  }
+});
+
+// ── Checagens de MENTORIAS ──
+(MENTORIAS || []).forEach((m, i) => {
+  const who = `MENTORIAS #${i + 1}`;
+  if (!COURSES[m.curso]) fail(`${who}: curso "${m.curso}" não existe em COURSES.`);
+  if (m.data && Number.isNaN(new Date(m.data).getTime())) fail(`${who}: data "${m.data}" inválida (use "2026-11-10T19:00").`);
+  if (m.link && !isUrl(m.link)) fail(`${who}: link precisa começar com https://`);
 });
 
 console.log(`\n${errors === 0 ? "✅" : "❌"} ${errors} erro(s), ${warnings} aviso(s).`);

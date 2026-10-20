@@ -6,11 +6,9 @@
  * mexer aqui — não precisa tocar no index.html.
  *
  * IMPORTANTE — pendências que a equipe precisa resolver (não inventei nada disso):
- * 1) REGION_FACTORS abaixo são multiplicadores estimados/heurísticos, não vêm
- *    de uma fonte oficial por região. Isso precisa ou (a) ser substituído por
- *    dados reais por região, ou (b) continuar deixando claro na interface que
- *    é uma aproximação -- já adicionei um aviso no index.html, mas o número em
- *    si continua sem fonte.
+ * 1) [RESOLVIDO em out/2026] O antigo REGION_FACTORS (multiplicador por
+ *    região aplicado à nota SISU) foi removido: não tinha fonte, e a nota de
+ *    corte de uma universidade não muda conforme a região de quem se inscreve.
  * 2) Cada curso tem `fuvest`, `notaSISU`, `sal`, `emp`, `dem` etc. Nem todos
  *    têm uma fonte/URL específica anexada -- só existe uma nota genérica no
  *    rodapé do site. Ver seção "Sobre os dados" do index.html.
@@ -53,7 +51,7 @@
  *   pra cursos da USP. Antes de confiar 100% nisso, valeria ter alguém da
  *   Psicologia (ex: do Instituto de Psicologia da USP) revisando os códigos.
  * - Cobertura testada e comprovada (não é só afirmação): rodei
- *   riasec/coverage-test.js simulando ~9 mil perfis de resposta diferentes.
+ *   tests/coverage-test.js simulando ~9 mil perfis de resposta diferentes.
  *   Resultado: os 98 cursos conseguem aparecer em #1 para pelo menos um
  *   perfil, e nenhum fica fora do top-3 sempre. Rode esse script de novo
  *   depois de qualquer mudança nos vetores pra conferir que continua valendo.
@@ -77,11 +75,16 @@
 // revisado -- nesse caso o aviso não aparece no site.
 const DATA_LAST_REVIEWED = "";
 
-const REGION_FACTORS = {
-  sudeste: 1.00, sul: 0.975, centroOeste: 0.955, nordeste: 0.930, norte: 0.905
-};
-const REGION_LABELS = {
-  sudeste:"Sudeste", sul:"Sul", centroOeste:"Centro-Oeste", nordeste:"Nordeste", norte:"Norte"
+// Configurações gerais do site (contato, redes). Edite aqui, não no HTML.
+const SITE_CONFIG = {
+  contatoEmail: "gabrielcrod14@usp.br",
+  instagram: "https://www.instagram.com/integrausp/",
+  // Link de um formulário (ex: Google Forms) para "Reportar problema /
+  // Sugestões". Enquanto estiver vazio, o botão abre o app de e-mail.
+  formularioContato: "",
+  // Link de um formulário para veteranos se cadastrarem como mentores.
+  // Enquanto estiver vazio, o convite abre o app de e-mail.
+  formularioVeteranos: ""
 };
 
 const QUESTIONS = [
@@ -491,7 +494,7 @@ const COURSES = {
     vec:[6,7,0,1,3,5], area:"ambiental",
     desc:"Processos industriais de produção, conservação e desenvolvimento de alimentos.",
     carreiras:"Engenheiro de alimentos, gerente de produção, analista de qualidade.",
-    fuvest:{ac:44, ep:27, ppi:27}, notaSISU:"672.80",
+    fuvest:{ac:44, ep:27, ppi:27}, fuvestNaoConferido:true, notaSISU:"672.80",
     sal:"R$ 4.500–10.000", salMid:7250, emp:"Alta", empScore:7, dem:"Crescendo", dur:"5",
     tags:["Alimentos","Indústria","Processos"]
   },
@@ -1000,3 +1003,57 @@ const COURSES = {
     tags:["Animais","Produção","Manejo"]
   }
 };
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * INFORMAÇÕES EXTRAS POR CURSO (opcional)
+ *
+ * Tudo aqui é OPCIONAL e começa vazio de propósito: são dados que ainda
+ * precisam ser levantados com fonte. Enquanto um campo não existir, a página
+ * do curso mostra "ainda em levantamento" em vez de inventar um valor.
+ *
+ * A chave tem que ser o nome EXATO do curso em COURSES. Exemplo de formato
+ * (valores fictícios só para mostrar a estrutura -- NÃO copie os números):
+ *
+ * "Estatística": {
+ *   provaoPaulista: { texto: "X vagas em 2026", fonte: "https://..." },
+ *   olimpiadas:     { texto: "Aceita medalhistas da OBMEP...", fonte: "https://..." },
+ *   ondeEstudar:    [ { nome: "UNICAMP", obs: "Campinas" } ],
+ *   curiosidade:    "Texto curto com uma pessoa notável formada na área (com fonte).",
+ *   fontes:         [ "https://..." ]
+ * }
+ * ═══════════════════════════════════════════════════════════════════════ */
+const COURSE_EXTRAS = {
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * VETERANOS (mentores) — "Fale com um Veterano"
+ *
+ * Só cadastre alguém com autorização por escrito da pessoa (LGPD).
+ * NUNCA coloque e-mail ou telefone pessoal aqui: este arquivo é público.
+ * Para contato, use LinkedIn ou um formulário (ex: Google Forms) que
+ * encaminhe a mensagem sem expor o endereço.
+ *
+ * Formato:
+ * {
+ *   nome: "Nome Sobrenome",
+ *   curso: "Estatística",            // nome EXATO de um curso em COURSES
+ *   ano: "3º ano",                   // tempo de curso
+ *   bio: "Mensagem curta de boas-vindas.",
+ *   foto: "img/veteranos/nome.jpg",  // opcional
+ *   linkedin: "https://www.linkedin.com/in/...", // opcional
+ *   formulario: "https://forms.gle/..."          // opcional
+ * }
+ * ═══════════════════════════════════════════════════════════════════════ */
+const VETERANS = [
+];
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * MENTORIAS EM GRUPO (rodas de conversa)
+ *
+ * Formato:
+ * { curso: "Estatística", titulo: "Roda de conversa", data: "2026-11-10T19:00", link: "https://meet.google.com/..." }
+ * Encontros com data passada somem automaticamente do site.
+ * ═══════════════════════════════════════════════════════════════════════ */
+const MENTORIAS = [
+];
