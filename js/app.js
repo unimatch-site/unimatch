@@ -40,6 +40,8 @@
 
   /* ── ESTADO (salvo no navegador do aluno) ── */
   const STORE_KEY = "um_state_v2";
+  // Muda sozinho quando as perguntas mudam; respostas de um quiz antigo são descartadas.
+  const QUIZ_VERSION = QUESTIONS.map(q => q.dim + (q.letra || "") + q.opts.length).join("|");
   const state = {
     answers: [],      // respostas do quiz em andamento
     q: 0,             // pergunta atual
@@ -51,8 +53,10 @@
   function loadState() {
     try {
       const s = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-      if (Array.isArray(s.answers)) state.answers = s.answers;
-      if (Number.isInteger(s.q)) state.q = s.q;
+      if (s.quizVersion === QUIZ_VERSION) {
+        if (Array.isArray(s.answers)) state.answers = s.answers;
+        if (Number.isInteger(s.q)) state.q = s.q;
+      }
       if (typeof s.lastCode === "string") state.lastCode = s.lastCode;
       if (Array.isArray(s.favorites)) state.favorites = s.favorites;
       // Aproveita favoritos salvos pela versão antiga do site.
@@ -68,7 +72,7 @@
   function saveState() {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify({
-        answers: state.answers, q: state.q, lastCode: state.lastCode, favorites: state.favorites
+        quizVersion: QUIZ_VERSION, answers: state.answers, q: state.q, lastCode: state.lastCode, favorites: state.favorites
       }));
     } catch (e) {}
   }
@@ -166,7 +170,7 @@
         <div class="pill-row">
           <span class="pill"><strong>${total}</strong> cursos</span>
           <span class="pill"><strong>${QUESTIONS.length}</strong> perguntas</span>
-          <span class="pill">⏱ cerca de <strong>3 min</strong></span>
+          <span class="pill">⏱ cerca de <strong>5 min</strong></span>
         </div>
         <div class="btn-row">
           <a class="btn btn-primary btn-block" href="#/quiz">✦ Fazer o quiz e encontrar meu curso</a>
@@ -177,8 +181,8 @@
       <section class="section card">
         <h2 class="section-title">Como funciona</h2>
         <div class="steps">
-          <div class="step"><span class="step-num">1</span><p>Responda ${QUESTIONS.length} perguntas rápidas sobre o que você gosta de fazer.</p></div>
-          <div class="step"><span class="step-num">2</span><p>Veja um ranking de cursos com a sua afinidade de 0 a 100%.</p></div>
+          <div class="step"><span class="step-num">1</span><p>Diga o quanto você gosta de algumas atividades do dia a dia e responda umas perguntas rápidas.</p></div>
+          <div class="step"><span class="step-num">2</span><p>Veja os cursos que mais combinam com você, separados por nível de compatibilidade.</p></div>
           <div class="step"><span class="step-num">3</span><p>Abra cada curso para ver carreiras, salários e como ingressar.</p></div>
         </div>
       </section>
@@ -213,7 +217,7 @@
       <section class="card">
         <div class="eyebrow">Quiz vocacional</div>
         <h1 class="page-title">Encontre seu curso</h1>
-        <p class="page-sub">São ${QUESTIONS.length} perguntas. Não existe resposta certa: escolha o que mais
+        <p class="page-sub">São ${QUESTIONS.length} perguntas rápidas, cerca de 5 minutos. Não existe resposta certa: escolha o que mais
           tem a ver com você hoje. No fim, você vê um ranking dos ${COURSE_NAMES.length} cursos por afinidade.</p>
         <div class="btn-row">
           ${inProgress
@@ -244,8 +248,10 @@
           <div class="progress-meta"><span>Pergunta ${state.q + 1} de ${total}</span><span>${pct}%</span></div>
           <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
         </div>
+        <div class="eyebrow">${q.dim === "likert" ? "Parte 1 de 2 · Seus interesses" : "Parte 2 de 2 · Suas preferências"}</div>
+        ${q.dim === "likert" ? `<p class="question-hint" style="margin-bottom:6px">Quanto você gostaria de fazer isso?</p>` : ""}
         <h1 class="question-text" id="q-title"><span class="visually-hidden">Pergunta ${state.q + 1} de ${total}: </span>${esc(q.q)}</h1>
-        <p class="question-hint">${q.multi ? "Pode marcar mais de uma." : "Escolha uma opção."}</p>
+        ${q.dim === "likert" ? "" : `<p class="question-hint">${q.multi ? "Pode marcar mais de uma." : "Escolha uma opção."}</p>`}
         <div class="options" role="${q.multi ? "group" : "radiogroup"}" aria-labelledby="q-title">
           ${q.opts.map((o, i) => `
             <button type="button" class="option${q.multi ? " multi" : ""}" role="${q.multi ? "checkbox" : "radio"}"
@@ -338,7 +344,7 @@
     const res = resultsFromCode(code);
     if (!res) {
       app.innerHTML = `<section class="card"><h1 class="page-title">Link de resultado inválido</h1>
-        <p class="page-sub">Esse link pode ser de uma versão antiga do quiz. Que tal refazer? Leva uns 3 minutos.</p>
+        <p class="page-sub">Esse link pode ser de uma versão antiga do quiz. Que tal refazer? Leva uns 5 minutos.</p>
         <a class="btn btn-primary btn-block" href="#/quiz">Fazer o quiz</a></section>`;
       return;
     }
@@ -357,7 +363,8 @@
       </section>
 
       <section class="section">
-        <h2 class="section-title">Ranking de afinidade</h2>
+        <h2 class="section-title">Cursos mais compatíveis</h2>
+        <p class="tiny" style="margin-bottom:10px">Cursos com compatibilidade parecida ficam na mesma faixa: a ordem dentro dela é só um desempate.</p>
         <ol class="rank-list">
           ${shown.map((r, i) => {
             const c = COURSES[r.name];
@@ -365,10 +372,9 @@
               <span class="rank-pos">${i + 1}º</span>
               <span>
                 <span class="rank-name">${esc(r.name)}</span>
-                <span class="bar" role="img" aria-label="Afinidade ${r.score}%"><span style="width:${r.score}%"></span></span>
+                <span class="band band-${r.band.key}">${r.band.label}</span>
                 <span class="rank-meta">${esc(AREAS[c.area].label)} · ${esc(c.dur)} anos · FUVEST EP ${c.fuvest ? c.fuvest.ep + "/90" : "—"}</span>
               </span>
-              <span class="rank-pct">${r.score}%</span>
             </a></li>`;
           }).join("")}
         </ol>
@@ -388,6 +394,13 @@
 
       ${renderVeteransSection(top)}
 
+      ${SITE_CONFIG.formularioFeedback ? `<section class="section card">
+        <h2 class="section-title">Esse resultado fez sentido pra você?</h2>
+        <p class="muted small">Sua resposta é anônima e ajuda a melhorar o quiz.</p>
+        <div class="btn-row" style="margin-top:12px">
+          <a class="btn btn-secondary" href="${safeUrl(SITE_CONFIG.formularioFeedback)}" target="_blank" rel="noopener">👍 👎 Responder em 1 minuto</a>
+        </div></section>` : ""}
+
       <div class="btn-row section">
         <a class="btn btn-ghost" href="#/quiz" id="redo-btn">↩ Refazer o quiz</a>
         <a class="btn btn-ghost" href="#/explorar">🔍 Explorar todos os cursos</a>
@@ -403,30 +416,32 @@
   function profileSummary(answers, vec) {
     const sorted = S.RIASEC.map((l, i) => ({ l, val: vec[i] })).sort((a, b) => b.val - a.val);
     const [a, b] = sorted;
-    const mathLabels = { alto: "alta", medio: "média", baixo: "baixa", minimo: "mínima" };
-    const techLabels = { "muito-alto": "muito alto", alto: "alto", moderado: "moderado", baixo: "baixo" };
+    const mathLabels = { 3: "adora", 2: "se vira bem com", 1: "prefere só o básico de", 0: "prefere evitar" };
+    const techLabels = { 3: "quer criar tecnologia", 2: "quer usar bastante tecnologia", 1: "usa tecnologia só no dia a dia", 0: "prefere ficar longe de programação" };
     const dur = S.getAnswer(QUESTIONS, answers, "duration");
     const durLabel = dur === "4" ? "de até 4 anos" : dur === "5" ? "de até 5 anos" : "de até 6 anos ou mais";
     const areas = S.getAreaFilter(QUESTIONS, answers);
     const areaNote = areas
-      ? `Como você marcou interesse em <strong>${areas.map(x => esc(AREAS[x].label)).join(", ")}</strong>, o ranking mostra só cursos dessa(s) área(s); seu perfil decide a ordem.`
-      : `Você não marcou uma área específica, então o ranking inclui todas as áreas.`;
-    const max = Math.max(...vec, 1);
-    return `Seu perfil é principalmente <strong>${RIASEC_INFO[a.l].nome}</strong> (${RIASEC_INFO[a.l].desc})${b.val > 0
-        ? `, com traços <strong>${RIASEC_INFO[b.l].nome}</strong> também fortes` : ""}.
-      Você tem afinidade <strong>${mathLabels[S.getAnswer(QUESTIONS, answers, "math")]}</strong> com matemática,
-      interesse <strong>${techLabels[S.getAnswer(QUESTIONS, answers, "tech")]}</strong> em tecnologia
-      e prefere uma graduação <strong>${durLabel}</strong>.<br><br>${areaNote}
+      ? `Os cursos de <strong>${areas.map(x => esc(AREAS[x].label)).join(", ")}</strong>, que você marcou, ganham um bônus. Cursos de outras áreas ainda aparecem se combinarem muito com você.`
+      : `Você não marcou uma área específica, então todas as áreas entram em pé de igualdade.`;
+    const flat = a.val - sorted.at(-1).val < 0.5;
+    return `${flat
+        ? `Você marcou quase tudo com a mesma intensidade, então seu perfil ainda não tem um tipo dominante. Explorar os cursos pode ajudar a descobrir do que você gosta mais.`
+        : `Seu perfil é principalmente <strong>${RIASEC_INFO[a.l].nome}</strong> (${RIASEC_INFO[a.l].desc})${b.val > sorted.at(-1).val
+          ? `, com traços <strong>${RIASEC_INFO[b.l].nome}</strong> também fortes` : ""}.`}
+      Você ${mathLabels[S.getAnswer(QUESTIONS, answers, "math")]} matemática,
+      ${techLabels[S.getAnswer(QUESTIONS, answers, "tech")]}
+      e topa uma graduação <strong>${durLabel}</strong>.<br><br>${areaNote}
       <div class="dims">${S.RIASEC.map((l, i) => {
-        const pct = Math.round((vec[i] / max) * 100);
+        const pct = Math.round(((vec[i] - 1) / 4) * 100);
         return `<div class="dim"><span class="dim-label">${RIASEC_INFO[l].nome}</span>
           <span class="bar"><span style="width:${pct}%"></span></span><span class="dim-val">${pct}%</span></div>`;
       }).join("")}</div>
-      <p class="tiny" style="margin-top:10px">Perfil baseado no modelo RIASEC de John Holland, muito usado em orientação vocacional.</p>`;
+      <p class="tiny" style="margin-top:10px">Quanto você gostou das atividades de cada tipo, no modelo RIASEC de John Holland, muito usado em orientação vocacional.</p>`;
   }
 
   function emailResultsHref(code, ranked) {
-    const lines = ranked.slice(0, 10).map((r, i) => `${i + 1}. ${r.name} — ${r.score}% de afinidade`);
+    const lines = ranked.slice(0, 10).map((r, i) => `${i + 1}. ${r.name} — ${r.band.label}`);
     const body = "Meus resultados no UniMatch:\n\n" + lines.join("\n") +
       "\n\nVer o resultado completo: " + siteBase() + "#/resultado/" + code;
     return "mailto:?subject=" + encodeURIComponent("Meus resultados no UniMatch") + "&body=" + encodeURIComponent(body);
@@ -643,15 +658,16 @@
         </div>
 
         ${match ? `<div class="match-box">
-          <div class="small muted">Sua afinidade (${matchPos}º no seu ranking)</div>
-          <div class="match-big">${match.score}%</div>
+          <div class="small muted">Sua compatibilidade (${matchPos}º no seu ranking)</div>
+          <div class="match-big">${match.band.label}</div>
           <div class="factors">${[
             ["🎯 Perfil de interesses", match.breakdown.perfil],
             ["🧮 Matemática", match.breakdown.matematica],
             ["💻 Tecnologia", match.breakdown.tecnologia],
             ["📅 Duração", match.breakdown.duracao],
-            ["💰 Expectativa salarial", match.breakdown.salario]
-          ].map(([l, v]) => `<div class="factor"><span>${l}</span><span class="bar"><span style="width:${v}%"></span></span><span>${v}%</span></div>`).join("")}</div>
+            ["💰 Salário", match.breakdown.salario],
+            ["🧭 Área que você marcou", match.breakdown.area]
+          ].filter(([, v]) => v !== null).map(([l, v]) => `<div class="factor"><span>${l}</span><span class="bar"><span style="width:${v}%"></span></span><span>${v}%</span></div>`).join("")}</div>
         </div>` : ""}
 
         <section class="section card">
@@ -710,6 +726,15 @@
           ${extra.ondeEstudar ? "" : `<p class="note">A lista de outras universidades públicas que oferecem este curso ainda está em levantamento.</p>`}
         </section>
 
+        ${extra.pessoas && extra.pessoas.length ? `<section class="section card">
+          <h2 class="section-title">⭐ Quem estudou isso</h2>
+          <ul class="people">${extra.pessoas.map(pp => `<li>
+            <div class="person-head"><strong>${esc(pp.nome)}</strong>
+              <span class="badge ${pp.tipo === "curiosidade" ? "warn" : "accent"}">${pp.tipo === "curiosidade" ? "Curiosidade" : "Na área"}</span></div>
+            <p class="muted small">${esc(pp.sobre)}${safeUrl(pp.fonte) ? ` <a href="${safeUrl(pp.fonte)}" target="_blank" rel="noopener">Fonte</a>` : ""}</p>
+          </li>`).join("")}</ul>
+        </section>` : ""}
+
         ${extra.curiosidade ? `<section class="section card"><h2 class="section-title">💡 Curiosidade</h2><p class="muted">${esc(extra.curiosidade)}</p></section>` : ""}
 
         ${vets.length || ments.length ? `<section class="section">
@@ -736,19 +761,23 @@
       <section class="card">
         <h2 class="section-title">🎓 O projeto</h2>
         <p class="muted">O UniMatch é uma plataforma gratuita de orientação vocacional para estudantes de escolas
-          públicas que estão se preparando para o ENEM e os vestibulares. O UniMatch faz parte do <strong>Integra</strong>, grupo dedicado ao desenvolvimento de projetos de democratização e inclusão do acesso ao conhecimento.</p>
+          públicas que estão se preparando para o ENEM e os vestibulares. O projeto
+          faz parte do <strong>Integra</strong>, grupo dedicado a projetos de democratização e inclusão do acesso
+          ao conhecimento.</p>
         <p class="muted" style="margin-top:10px">Muitos estudantes chegam à inscrição sem conhecer bem os cursos,
           o mercado de trabalho e as notas de corte. O UniMatch reúne dados públicos para ajudar nessa escolha.</p>
       </section>
 
       <section class="card">
         <h2 class="section-title">🧭 Como o quiz funciona</h2>
-        <p class="muted">As 6 primeiras perguntas montam o seu perfil no modelo RIASEC (Realista, Investigativo,
+        <p class="muted">As 24 primeiras perguntas montam o seu perfil no modelo RIASEC (Realista, Investigativo,
           Artístico, Social, Empreendedor, Convencional), criado pelo psicólogo John Holland. Cada curso também
-          tem um perfil RIASEC, e a afinidade mede o quanto os dois se parecem. As outras perguntas (matemática,
-          tecnologia, duração e salário) ajustam a nota, e as áreas marcadas filtram o ranking.</p>
+          tem um perfil RIASEC, e a compatibilidade mede o quanto os dois se parecem. As outras perguntas comparam
+          o que você topa de matemática, tecnologia, duração e salário com o que cada curso exige, e as áreas
+          marcadas dão um bônus aos cursos delas.</p>
         <p class="note">Os perfis RIASEC dos cursos foram atribuídos pela equipe com base nas características de cada
-          área e ainda não passaram por validação de especialistas em psicologia.</p>
+          área e ainda não passaram por validação de especialistas em psicologia. As afirmações do quiz também
+          estão em fase de teste.</p>
       </section>
 
       <section class="card">

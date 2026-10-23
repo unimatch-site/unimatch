@@ -1,19 +1,20 @@
 # UniMatch
 
 Plataforma gratuita de orientação vocacional para estudantes de escolas públicas.
-Projeto de extensão do IME-USP, parte do grupo Integra.
+Projeto do grupo Integra.
 
 ## O que é
 
 Um site (pensado primeiro para o celular) com:
 
-- **Quiz** de 11 perguntas que gera um ranking de afinidade (0–100%) com os cursos
-  da USP, usando o modelo RIASEC de John Holland.
+- **Quiz** de 29 perguntas (24 afirmações sobre interesses + 5 de contexto) que
+  separa os cursos da USP em faixas de compatibilidade, usando o modelo RIASEC de
+  John Holland. A fórmula está explicada no topo de `js/scoring.js`.
 - **Explorar cursos**: busca (ignora acentos), filtro por área, por nota de corte da
   FUVEST (Ampla, Escola Pública ou PPI), por salário médio e ordenação.
 - **Página de cada curso**: o que é, carreiras, mercado e salário, como ingressar
-  (FUVEST por modalidade, SISU, Provão Paulista, vagas olímpicas), onde estudar
-  e veteranos/mentorias.
+  (FUVEST por modalidade, SISU, Provão Paulista, vagas olímpicas), onde estudar,
+  pessoas famosas que estudaram aquilo e veteranos/mentorias.
 - **Resultados**: link compartilhável, envio por e-mail e seção "Fale com um veterano".
 - Favoritos, tema claro/escuro e navegação acessível por teclado e leitor de tela.
 
@@ -62,7 +63,7 @@ Settings → Pages → "Deploy from a branch" → `main` / pasta raiz.
 
 ## Como contribuir
 
-O projeto está aberto a colaboradores de todos os cursos da USP.
+O projeto está aberto a colaboradores de qualquer curso.
 Não é necessário saber programar para contribuir: a maior parte do trabalho
 pendente é levantar dados com fonte (veja `PROPOSTA.md`).
 

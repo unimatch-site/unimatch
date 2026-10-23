@@ -2,44 +2,58 @@
  * scoring.js — lógica pura do UniMatch (sem DOM).
  *
  * Usado tanto pelo site (index.html carrega este arquivo) quanto pelos testes
- * em Node (tests/*.js fazem require dele). Assim o teste de cobertura testa a
- * fórmula de verdade, e não uma cópia que pode ficar desatualizada.
+ * em Node (tests/*.js fazem require dele). Assim os testes testam a fórmula
+ * de verdade, e não uma cópia que pode ficar desatualizada.
  *
- * As fórmulas de computeScores são as mesmas do protótipo original.
+ * COMO A NOTA DE CADA CURSO É CALCULADA (0 a 100)
+ *
+ *   Perfil RIASEC ..... 55 pts  compara as 24 afirmações com o `vec` do curso
+ *   Matemática ........ 12 pts  compara a resposta com `matematica` do curso
+ *   Tecnologia ........ 12 pts  compara a resposta com `tecnologia` do curso
+ *   Duração ...........  8 pts  perde pontos se o curso é mais longo que o aceito
+ *   Salário ........... até 13  só conta se o aluno disse que o salário pesa
+ *   Área marcada ...... 15 pts  bônus para cursos das áreas que o aluno marcou
+ *
+ * A nota final é a soma dividida pelo máximo possível PARA AQUELE ALUNO
+ * (quem diz que salário não pesa não perde nada por isso).
  */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory();
   else root.UniMatchScoring = factory();
 })(typeof self !== "undefined" ? self : this, function () {
   const RIASEC = ["R", "I", "A", "S", "E", "C"];
-  const RIASEC_IDX = { R: 0, I: 1, A: 2, S: 3, E: 4, C: 5 };
 
-  // Peso de cada pergunta central no vetor RIASEC do aluno.
-  const CORE_QUESTIONS = [
-    { dim: "activity",    weight: 3.0 },
-    { dim: "talent",      weight: 2.5 },
-    { dim: "environment", weight: 2.0 },
-    { dim: "motivation",  weight: 2.5 },
-    { dim: "team_role",   weight: 1.5 },
-    { dim: "challenge",   weight: 2.0 }
+  const WEIGHTS = { perfil: 55, matematica: 12, tecnologia: 12, duracao: 8, salario: 13, area: 15 };
+  const SALARY_WEIGHT = { muito: 1, bastante: 0.66, pouco: 0.33, nada: 0 };
+
+  // Faixas mostradas ao aluno no lugar de "81% contra 80%".
+  const BANDS = [
+    { min: 85, key: "alta",  label: "Muito compatível" },
+    { min: 70, key: "media", label: "Compatível" },
+    { min: 0,  key: "baixa", label: "Pode explorar" }
   ];
-
-  const MATH_SCORE = { alto: 10, medio: 6, baixo: 3, minimo: 0 };
-  const SAL_SCORE  = { "muito-alto": 4, alto: 3, medio: 2, baixo: 1 };
-  const TECH_SCORE = { "muito-alto": 10, alto: 7, moderado: 4, baixo: 1 };
 
   function getAnswer(questions, answers, dim) {
     const i = questions.findIndex(q => q.dim === dim);
     return i >= 0 ? answers[i] : undefined;
   }
 
+  // Média (1 a 5) das afirmações de cada letra RIASEC.
   function buildUserVector(questions, answers) {
-    const v = [0, 0, 0, 0, 0, 0];
-    CORE_QUESTIONS.forEach(({ dim, weight }) => {
-      const letter = getAnswer(questions, answers, dim);
-      if (letter && RIASEC_IDX[letter] !== undefined) v[RIASEC_IDX[letter]] += weight;
+    const sum = [0, 0, 0, 0, 0, 0], count = [0, 0, 0, 0, 0, 0];
+    questions.forEach((q, i) => {
+      if (q.dim !== "likert") return;
+      const k = RIASEC.indexOf(q.letra), v = Number(answers[i]);
+      if (k >= 0 && v >= 1 && v <= 5) { sum[k] += v; count[k]++; }
     });
-    return v;
+    return sum.map((s, k) => (count[k] ? s / count[k] : 3));
+  }
+
+  // Subtrai a média: o que importa é a FORMA do perfil (o que a pessoa gosta
+  // mais e menos), não se ela marcou tudo alto ou tudo baixo.
+  function center(v) {
+    const m = v.reduce((a, b) => a + b, 0) / v.length;
+    return v.map(x => x - m);
   }
 
   function cosineSimilarity(a, b) {
@@ -55,49 +69,61 @@
     return list.length > 0 && !list.includes("nenhuma") ? list : null;
   }
 
-  // Retorna os cursos ordenados por afinidade (0–100), com o detalhamento
-  // de cada fator. Se o aluno marcou áreas específicas, só entram cursos
-  // dessas áreas (a área funciona como filtro, não como bônus).
-  function computeScores(questions, courses, answers) {
-    const userVec = buildUserVector(questions, answers);
-    const durPref = parseInt(getAnswer(questions, answers, "duration"), 10) || 6;
-    const mathScore = MATH_SCORE[getAnswer(questions, answers, "math")] ?? 5;
-    const salScore  = SAL_SCORE[getAnswer(questions, answers, "salary")] ?? 2;
-    const techScore = TECH_SCORE[getAnswer(questions, answers, "tech")] ?? 4;
-    const areaFilter = getAreaFilter(questions, answers);
+  // Encaixe entre o que o aluno quer (0–3) e o que o curso exige (0–3).
+  // Curso exigindo MAIS do que o aluno topa pesa mais que o contrário.
+  function levelFit(user, course, overPenalty, underPenalty) {
+    const over = Math.max(0, course - user), under = Math.max(0, user - course);
+    return Math.max(0, 1 - (over * overPenalty + under * underPenalty) / 3);
+  }
 
-    const names = Object.keys(courses).filter(n => !areaFilter || areaFilter.includes(courses[n].area));
+  function bandFor(score) {
+    return BANDS.find(b => score >= b.min);
+  }
+
+  // Retorna todos os cursos ordenados por nota (0–100), com o detalhamento.
+  function computeScores(questions, courses, answers) {
+    const user = center(buildUserVector(questions, answers));
+    const mathUser = Number(getAnswer(questions, answers, "math") ?? 1.5);
+    const techUser = Number(getAnswer(questions, answers, "tech") ?? 1.5);
+    const durPref = parseInt(getAnswer(questions, answers, "duration"), 10) || 6;
+    const salW = SALARY_WEIGHT[getAnswer(questions, answers, "salary")] ?? 0.33;
+    const areas = getAreaFilter(questions, answers);
+
+    const names = Object.keys(courses);
+    const sals = names.map(n => courses[n].salMid);
+    const salMin = Math.min(...sals), salMax = Math.max(...sals);
+    const max = WEIGHTS.perfil + WEIGHTS.matematica + WEIGHTS.tecnologia + WEIGHTS.duracao +
+      WEIGHTS.salario * salW + (areas ? WEIGHTS.area : 0);
+
     return names.map(name => {
       const c = courses[name];
-      const sim = cosineSimilarity(userVec, c.vec);
-      let score = sim * 70;
+      const perfil = (cosineSimilarity(user, center(c.vec)) + 1) / 2;   // 0 a 1
+      const matematica = levelFit(mathUser, c.matematica, 1, 0.3);
+      const tecnologia = levelFit(techUser, c.tecnologia, 1, 0.6);
+      const dur = parseInt(c.dur, 10);
+      const duracao = dur <= durPref ? 1 : Math.max(0, 1 - 0.5 * (dur - durPref));
+      const salario = salMax > salMin ? (c.salMid - salMin) / (salMax - salMin) : 0.5;
+      const area = areas && areas.includes(c.area) ? 1 : 0;
 
-      const courseDur = parseInt(c.dur, 10);
-      if (courseDur <= durPref) score += 8; else score -= (courseDur - durPref) * 4;
-
-      const mathDemand = (c.vec[1] + c.vec[5]) / 2; // aproximação: Investigativo + Convencional
-      const mathPts = Math.max(0, 8 - Math.abs(mathScore - mathDemand));
-      score += mathPts;
-
-      const courseSal = c.salMid >= 12000 ? 4 : c.salMid >= 8000 ? 3 : c.salMid >= 5000 ? 2 : 1;
-      const salDiff = Math.abs(salScore - courseSal);
-      if (salDiff === 0) score += 7; else if (salDiff === 1) score += 4;
-
-      const techPts = Math.max(0, 7 - Math.abs(techScore - c.vec[1])); // aproximação: Investigativo
-      score += techPts;
-
+      const pts = perfil * WEIGHTS.perfil + matematica * WEIGHTS.matematica +
+        tecnologia * WEIGHTS.tecnologia + duracao * WEIGHTS.duracao +
+        salario * WEIGHTS.salario * salW + area * (areas ? WEIGHTS.area : 0);
+      const score = Math.round((pts / max) * 100);
       return {
         name,
-        score: Math.min(100, Math.max(0, Math.round(score))),
+        score,
+        exact: pts / max,
+        band: bandFor(score),
         breakdown: {
-          perfil: Math.round(sim * 100),
-          matematica: Math.round((mathPts / 8) * 100),
-          tecnologia: Math.round((techPts / 7) * 100),
-          duracao: courseDur <= durPref ? 100 : Math.max(0, 100 - (courseDur - durPref) * 40),
-          salario: salDiff === 0 ? 100 : salDiff === 1 ? 57 : 20
+          perfil: Math.round(perfil * 100),
+          matematica: Math.round(matematica * 100),
+          tecnologia: Math.round(tecnologia * 100),
+          duracao: Math.round(duracao * 100),
+          salario: salW > 0 ? Math.round(salario * 100) : null,
+          area: areas ? area * 100 : null
         }
       };
-    }).sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, "pt-BR"));
+    }).sort((a, b) => b.exact - a.exact || a.name.localeCompare(b.name, "pt-BR"));
   }
 
   // Confere se um conjunto de respostas é válido para as perguntas atuais.
@@ -144,8 +170,8 @@
   }
 
   return {
-    RIASEC, CORE_QUESTIONS,
-    getAnswer, buildUserVector, cosineSimilarity, getAreaFilter, computeScores,
+    RIASEC, WEIGHTS, BANDS,
+    getAnswer, buildUserVector, cosineSimilarity, getAreaFilter, computeScores, bandFor,
     isValidAnswers, encodeAnswers, decodeAnswers, slugify, normalize
   };
 });

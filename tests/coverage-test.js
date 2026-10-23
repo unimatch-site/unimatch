@@ -1,22 +1,19 @@
 /*
- * coverage-test.js — testa se cada curso consegue ser a recomendação #1
- * para pelo menos uma combinação de respostas do quiz, e se nenhum curso
- * fica sempre fora do top-3.
+ * coverage-test.js — confere que todo curso consegue ficar em 1º lugar para
+ * algum perfil de respostas (ou empatado com o 1º, quando dois cursos têm
+ * exatamente os mesmos dados).
  *
- * Usa a MESMA função de pontuação do site (js/scoring.js), então o teste
- * nunca fica desatualizado em relação ao que o aluno vê.
- *
+ * Usa a MESMA função de pontuação do site (js/scoring.js).
  * Como rodar:  node tests/coverage-test.js
- * (sai com código 1 se algum curso nunca aparecer em #1 — útil no GitHub Actions)
+ * (sai com código 1 se algum curso nunca chegar ao topo — útil no GitHub Actions)
  */
 const S = require("../js/scoring.js");
 const { QUESTIONS, COURSES } = require("./load-data.js")();
+const buildAnswers = require("./helpers.js");
 
-const dims = QUESTIONS.map(q => q.dim);
-const optsOf = dim => QUESTIONS.find(q => q.dim === dim).opts.map(o => o.v);
-const CORE = S.CORE_QUESTIONS.map(c => c.dim);
-const AREAS = optsOf("areas_interesse").filter(v => v !== "nenhuma");
-const MATH = optsOf("math"), TECH = optsOf("tech"), DUR = optsOf("duration"), SAL = optsOf("salary");
+const names = Object.keys(COURSES);
+const LETTERS = S.RIASEC;
+const DUR = ["4", "5", "6"], SAL = ["muito", "bastante", "pouco", "nada"];
 
 // Gerador pseudoaleatório com semente fixa: o resultado é sempre o mesmo.
 let seed = 42;
@@ -26,41 +23,45 @@ function rand() {
   t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
 }
+const pick = arr => arr[Math.floor(rand() * arr.length)];
 
-const rank1 = new Set(), top3 = new Set();
+const top1 = new Set(), top3 = new Set();
 let profiles = 0;
-
-function testCombo(letters) {
-  MATH.forEach(m => TECH.forEach(t => DUR.forEach(d => SAL.forEach(s => {
-    [["nenhuma"], ...AREAS.map(a => [a])].forEach(areas => {
-      const byDim = { math: m, tech: t, duration: d, salary: s, areas_interesse: areas };
-      CORE.forEach((dim, i) => { byDim[dim] = letters[i]; });
-      const ranked = S.computeScores(QUESTIONS, COURSES, dims.map(dim => byDim[dim]));
-      profiles++;
-      if (!ranked.length) return;
-      rank1.add(ranked[0].name);
-      ranked.slice(0, 3).forEach(r => top3.add(r.name));
-    });
-  }))));
+function record(answers) {
+  const ranked = S.computeScores(QUESTIONS, COURSES, answers);
+  profiles++;
+  ranked.filter(r => r.exact >= ranked[0].exact - 1e-9).forEach(r => top1.add(r.name)); // empates contam
+  ranked.slice(0, 3).forEach(r => top3.add(r.name));
 }
 
-const L = S.RIASEC;
-L.forEach(l => testCombo(Array(6).fill(l)));                       // perfis "puros"
-L.forEach(a => L.forEach(b => { if (a !== b) testCombo([a, a, a, b, b, b]); })); // metade/metade
-// 5 respostas numa letra e 1 em outra, em cada posição (ex: tudo "I" menos o talento "R")
-L.forEach(a => L.forEach(b => { if (a !== b) CORE.forEach((_, pos) => {
-  const letters = Array(6).fill(a); letters[pos] = b; testCombo(letters);
-}); }));
-const samples = Number(process.env.SAMPLES || 600);
-for (let i = 0; i < samples; i++) testCombo(CORE.map(() => L[Math.floor(rand() * 6)])); // mistos
+// 1) Para cada curso, o aluno "parecido com ele": interesses na forma do vec,
+//    matemática/tecnologia iguais às do curso, área marcada, variando duração e salário.
+names.forEach(name => {
+  const c = COURSES[name];
+  const lo = Math.min(...c.vec), hi = Math.max(...c.vec);
+  const letras = {};
+  LETTERS.forEach((l, i) => { letras[l] = hi > lo ? Math.round(1 + 4 * (c.vec[i] - lo) / (hi - lo)) : 3; });
+  DUR.forEach(duration => SAL.forEach(salary => [["nenhuma"], [c.area]].forEach(areas_interesse =>
+    record(buildAnswers(QUESTIONS, { letras, math: String(c.matematica), tech: String(c.tecnologia), duration, salary, areas_interesse })))));
+});
 
-const all = Object.keys(COURSES);
-const neverRank1 = all.filter(c => !rank1.has(c));
-const neverTop3 = all.filter(c => !top3.has(c));
+// 2) Perfis aleatórios, para cobrir combinações mistas.
+const samples = Number(process.env.SAMPLES || 20000);
+const AREAS = [...new Set(names.map(n => COURSES[n].area))];
+for (let i = 0; i < samples; i++) {
+  const letras = {};
+  LETTERS.forEach(l => { letras[l] = 1 + Math.floor(rand() * 5); });
+  record(buildAnswers(QUESTIONS, {
+    letras, math: pick(["0", "1", "2", "3"]), tech: pick(["0", "1", "2", "3"]),
+    duration: pick(DUR), salary: pick(SAL), areas_interesse: rand() < 0.5 ? ["nenhuma"] : [pick(AREAS)]
+  }));
+}
 
+const neverTop = names.filter(n => !top1.has(n));
+const neverTop3 = names.filter(n => !top3.has(n));
 console.log(`Perfis simulados: ${profiles.toLocaleString("pt-BR")}`);
-console.log(`Cursos que aparecem em #1 para pelo menos 1 perfil: ${rank1.size} / ${all.length}`);
-if (neverRank1.length) console.log("Nunca em #1:\n" + neverRank1.map(c => " - " + c).join("\n"));
+console.log(`Cursos que chegam ao 1º lugar (ou empatam nele) para algum perfil: ${top1.size} / ${names.length}`);
+if (neverTop.length) console.log("Nunca no topo:\n" + neverTop.map(c => " - " + c).join("\n"));
 console.log(`Cursos que nunca aparecem no top-3: ${neverTop3.length}`);
 if (neverTop3.length) console.log(neverTop3.map(c => " - " + c).join("\n"));
-if (neverRank1.length) process.exit(1);
+if (neverTop.length) process.exit(1);

@@ -52,13 +52,24 @@ if (!Array.isArray(QUESTIONS) || QUESTIONS.length === 0) {
   });
 }
 
+// As 24 afirmações precisam ter 4 por letra RIASEC (senão uma letra pesa mais que outra).
+const porLetra = {};
+QUESTIONS.filter((q) => q.dim === "likert").forEach((q) => { porLetra[q.letra] = (porLetra[q.letra] || 0) + 1; });
+["R", "I", "A", "S", "E", "C"].forEach((l) => {
+  if (!porLetra[l]) fail(`Nenhuma afirmação do quiz mede a letra ${l}.`);
+  else if (porLetra[l] !== porLetra.R) warn(`A letra ${l} tem ${porLetra[l]} afirmações e a R tem ${porLetra.R}: o ideal é o mesmo número para todas.`);
+});
+["areas_interesse", "math", "tech", "duration", "salary"].forEach((d) => {
+  if (!QUESTIONS.some((q) => q.dim === d)) fail(`Falta a pergunta de contexto "${d}" no quiz.`);
+});
+
 // ── Checagens de SITE_CONFIG ──
 if (!SITE_CONFIG || !SITE_CONFIG.contatoEmail) {
   fail("SITE_CONFIG.contatoEmail está faltando (é o e-mail de contato do rodapé).");
 }
 
 // ── Checagens de COURSES ──
-const requiredFields = ["vec", "area", "desc", "carreiras", "fuvest", "notaSISU", "sal", "salMid", "emp", "empScore", "dem", "dur", "tags"];
+const requiredFields = ["vec", "area", "matematica", "tecnologia", "desc", "carreiras", "fuvest", "notaSISU", "sal", "salMid", "emp", "empScore", "dem", "dur", "tags"];
 const names = Object.keys(COURSES || {});
 
 if (names.length === 0) {
@@ -119,6 +130,10 @@ names.forEach((name) => {
     warn(`"${name}": empScore = ${c.empScore} fora da faixa esperada (0–10).`);
   }
 
+  ["matematica", "tecnologia"].forEach((k) => {
+    if (![0, 1, 2, 3].includes(c[k])) fail(`"${name}": ${k} = ${c[k]} deveria ser 0, 1, 2 ou 3.`);
+  });
+
   if (!Array.isArray(c.tags) || c.tags.length === 0) {
     fail(`"${name}": tags está vazio.`);
   }
@@ -143,6 +158,11 @@ Object.keys(COURSE_EXTRAS || {}).forEach((name) => {
     if (x[k] === undefined) return;
     if (!x[k].texto) fail(`COURSE_EXTRAS "${name}": ${k}.texto está vazio.`);
     if (!isUrl(x[k].fonte)) warn(`COURSE_EXTRAS "${name}": ${k} está sem link de fonte (fonte: "https://...").`);
+  });
+  (x.pessoas || []).forEach((pp, k) => {
+    if (!pp.nome || !pp.sobre) fail(`COURSE_EXTRAS "${name}": pessoa #${k + 1} sem nome ou sem texto.`);
+    if (!["area", "curiosidade"].includes(pp.tipo)) fail(`COURSE_EXTRAS "${name}": tipo de "${pp.nome}" deve ser "area" ou "curiosidade".`);
+    if (pp.fonte && !isUrl(pp.fonte)) fail(`COURSE_EXTRAS "${name}": fonte de "${pp.nome}" precisa começar com https://`);
   });
   if (x.ondeEstudar !== undefined && (!Array.isArray(x.ondeEstudar) || x.ondeEstudar.some((u) => !u.nome))) {
     fail(`COURSE_EXTRAS "${name}": ondeEstudar deve ser uma lista de { nome, obs }.`);

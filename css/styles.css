@@ -269,15 +269,21 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.03em; line-hei
 
 .rank-list { list-style: none; display: grid; gap: 10px; }
 .rank-item {
-  display: grid; grid-template-columns: 36px 1fr auto; gap: 10px; align-items: center;
+  display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: center;
   padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
   text-decoration: none; color: inherit; transition: border-color var(--t);
 }
 .rank-item:hover { border-color: var(--border-strong); }
 .rank-pos { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: var(--text-dim); text-align: center; }
 .rank-item.top .rank-pos { color: var(--warm); }
-.rank-name { font-weight: 700; font-size: 1rem; margin-bottom: 6px; line-height: 1.25; }
+.rank-name { display: block; font-weight: 700; font-size: 1rem; margin-bottom: 6px; line-height: 1.25; }
 .rank-meta { font-size: 0.78rem; color: var(--text-dim); margin-top: 4px; }
+.band { display: inline-block; margin-bottom: 8px; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 99px; white-space: nowrap; text-align: center; }
+.band-alta { background: var(--good-soft); color: var(--good); }
+.band-media { background: var(--warn-soft); color: var(--warn); }
+.band-baixa { background: var(--surface2); color: var(--text-muted); }
+.people { list-style: none; display: grid; gap: 14px; }
+.person-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 4px; }
 .rank-pct { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: var(--accent); font-variant-numeric: tabular-nums; }
 
 /* ── EXPLORAR ── */
@@ -345,7 +351,7 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.03em; line-hei
 .badge.accent { background: var(--accent-soft); color: var(--accent); }
 
 .match-box { background: var(--accent-soft); border-radius: var(--radius-sm); padding: 14px; margin-top: 14px; }
-.match-big { font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: var(--accent); line-height: 1; }
+.match-big { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--accent); line-height: 1; }
 .factors { display: grid; gap: 8px; margin-top: 12px; }
 .factor { display: grid; grid-template-columns: 1fr 80px 40px; gap: 8px; align-items: center; font-size: 0.82rem; color: var(--text-muted); }
 
