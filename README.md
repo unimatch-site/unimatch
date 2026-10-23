@@ -35,6 +35,8 @@ de forma gratuita, acessível e baseada em dados.
 | `js/app.js` | Telas e navegação | Dev |
 | `validate-data.js` | Confere se `data.js` está consistente | — |
 | `tests/` | Testes automáticos | — |
+| `js/fotos.js` + `img/pessoas/` | Fotos das pessoas famosas e seus créditos | Gerados pela ferramenta abaixo |
+| `ferramentas/baixar-fotos.html` | Baixa as fotos (licença livre) da Wikipédia e gera o `fotos.zip` | Qualquer pessoa: abrir no navegador |
 
 ## Como rodar no computador
 

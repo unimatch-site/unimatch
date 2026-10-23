@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baixar fotos — UniMatch</title>
+<!--
+  Ferramenta da equipe (não faz parte do site).
+
+  O que faz: para cada pessoa de COURSE_EXTRAS (data.js) que tem o campo
+  `wiki`, busca a foto principal do artigo na Wikipédia, confere no Wikimedia
+  Commons se a imagem tem licença livre, anota autor e licença e gera um
+  arquivo fotos.zip com:
+    img/pessoas/*.jpg   as fotos
+    js/fotos.js         autor, licença e caminho de cada foto (o site lê daqui)
+
+  Como usar: abra este arquivo no Chrome (dois cliques), confira as fotos
+  na tela, clique em "Baixar fotos.zip" e extraia o zip DENTRO da pasta do
+  projeto, substituindo o js/fotos.js antigo.
+-->
+<style>
+  :root { --accent: #5a4bea; --ok: #137a4b; --bad: #b3261e; --muted: #5f5b80; --line: #e4e2f3; }
+  body { font-family: system-ui, sans-serif; margin: 0; background: #f5f4fd; color: #1a1830; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.5rem; margin: 0 0 8px; }
+  p { color: var(--muted); line-height: 1.5; }
+  .bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 16px 0; }
+  button { font: inherit; font-weight: 600; padding: 12px 20px; border-radius: 10px; border: 0; background: var(--accent); color: #fff; cursor: pointer; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  ul { list-style: none; padding: 0; display: grid; gap: 10px; }
+  li { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+  .ph { width: 64px; height: 64px; border-radius: 50%; background: #ece9fb; overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--accent); font-weight: 700; }
+  .ph img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .name { font-weight: 700; }
+  .meta { font-size: .82rem; color: var(--muted); }
+  .ok { color: var(--ok); } .bad { color: var(--bad); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Baixar fotos das pessoas famosas</h1>
+  <p>Esta página busca na Wikipédia a foto de cada pessoa da seção "Quem estudou isso".
+    Só entram fotos com <strong>licença livre</strong> no Wikimedia Commons, com autor e licença anotados.
+    <strong>Confira se cada foto é mesmo da pessoa certa</strong> antes de baixar.</p>
+  <div class="bar">
+    <button id="zip" disabled>Baixar fotos.zip</button>
+    <span id="status" class="meta">Buscando…</span>
+  </div>
+  <ul id="list"></ul>
+</main>
+
+<script src="../data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(async function () {
+  const list = document.getElementById("list");
+  const status = document.getElementById("status");
+  const zipBtn = document.getElementById("zip");
+
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const slug = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const plain = html => { const d = document.createElement("div"); d.innerHTML = html || ""; return d.textContent.replace(/\s+/g, " ").trim(); };
+
+  const people = [];
+  Object.values(COURSE_EXTRAS).forEach(x => (x.pessoas || []).forEach(p => {
+    if (p.wiki && !people.some(q => q.nome === p.nome)) people.push(p);
+  }));
+
+  const rows = {};
+  people.forEach(p => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="ph">…</span><div><div class="name">${esc(p.nome)}</div><div class="meta">Buscando…</div></div>`;
+    list.appendChild(li);
+    rows[p.nome] = li;
+  });
+
+  async function getJSON(url) {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  }
+
+  async function findPhoto(p) {
+    const [lang, title] = p.wiki.split(/:(.+)/);
+    const page = await getJSON(`https://${lang}.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1` +
+      `&prop=pageimages|pageprops&piprop=thumbnail|name&pithumbsize=500&titles=${encodeURIComponent(title)}`);
+    const pg = Object.values(page.query.pages)[0];
+    if (!pg || pg.missing !== undefined) throw new Error("artigo não encontrado na Wikipédia");
+    if (pg.pageprops && pg.pageprops.disambiguation !== undefined) throw new Error("o artigo é uma página de desambiguação");
+    if (!pg.pageimage || !pg.thumbnail) throw new Error("o artigo não tem foto principal");
+
+    const file = await getJSON(`https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*` +
+      `&prop=imageinfo&iiprop=extmetadata&titles=${encodeURIComponent("File:" + pg.pageimage)}`);
+    const fp = Object.values(file.query.pages)[0];
+    const meta = fp && fp.imageinfo && fp.imageinfo[0] && fp.imageinfo[0].extmetadata;
+    if (!meta) throw new Error("a foto não está no Wikimedia Commons (provavelmente não é livre)");
+    const lic = plain(meta.LicenseShortName && meta.LicenseShortName.value);
+    if (meta.NonFree || /fair use|non-free/i.test(lic)) throw new Error("a foto não tem licença livre");
+
+    const img = await fetch(pg.thumbnail.source);
+    if (!img.ok) throw new Error("não consegui baixar a imagem");
+    const original = await img.blob();
+    const small = await shrink(original).catch(() => null);
+    const blob = small || original;
+    const ext = small ? "jpg"
+      : (pg.thumbnail.source.match(/\.(jpe?g|png|webp|gif)(?:$|\?)/i) || [, "jpg"])[1].toLowerCase().replace("jpeg", "jpg");
+    return {
+      blob,
+      arquivo: `img/pessoas/${slug(p.nome)}.${ext}`,
+      autor: plain(meta.Artist && meta.Artist.value) || "Autor desconhecido",
+      licenca: lic || "ver página da imagem",
+      licencaUrl: (meta.LicenseUrl && meta.LicenseUrl.value) || "",
+      origem: `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(pg.pageimage.replace(/ /g, "_"))}`
+    };
+  }
+
+  // Reduz para no máximo 240 px: no site a foto aparece pequena, e isso
+  // economiza o pacote de dados de quem acessa pelo celular.
+  async function shrink(original) {
+    const bmp = await createImageBitmap(original);
+    const k = Math.min(1, 240 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    const g = c.getContext("2d");
+    g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+    g.drawImage(bmp, 0, 0, c.width, c.height);
+    return new Promise(res => c.toBlob(b => res(b || original), "image/jpeg", 0.82));
+  }
+
+  const found = {};
+  let done = 0;
+  await Promise.all(people.map(async p => {
+    const li = rows[p.nome];
+    try {
+      const f = await findPhoto(p);
+      found[p.nome] = f;
+      li.querySelector(".ph").innerHTML = `<img src="${URL.createObjectURL(f.blob)}" alt="">`;
+      li.querySelector(".meta").innerHTML = `<span class="ok">✔ Foto encontrada</span> · ${esc(f.autor)} · ${esc(f.licenca)}`;
+    } catch (e) {
+      li.querySelector(".ph").textContent = "—";
+      li.querySelector(".meta").innerHTML = `<span class="bad">✖ Sem foto:</span> ${esc(e.message)}`;
+    }
+    status.textContent = `${++done} de ${people.length} conferidas…`;
+  }));
+
+  const ok = Object.keys(found).length;
+  status.textContent = `${ok} de ${people.length} pessoas com foto livre.`;
+  if (typeof JSZip === "undefined") {
+    status.textContent += " Não consegui carregar a biblioteca do zip (sem internet?).";
+    return;
+  }
+  zipBtn.disabled = ok === 0;
+  zipBtn.onclick = async () => {
+    zipBtn.disabled = true;
+    const zip = new JSZip();
+    const fotos = {};
+    Object.keys(found).sort((a, b) => a.localeCompare(b, "pt-BR")).forEach(nome => {
+      const f = found[nome];
+      zip.file(f.arquivo, f.blob);
+      fotos[nome] = { arquivo: f.arquivo, autor: f.autor, licenca: f.licenca, licencaUrl: f.licencaUrl, origem: f.origem };
+    });
+    zip.file("js/fotos.js",
+      "// Gerado por ferramentas/baixar-fotos.html em " + new Date().toLocaleDateString("pt-BR") + ".\n" +
+      "// Fotos do Wikimedia Commons. Os créditos (autor e licença) aparecem no site e são obrigatórios.\n" +
+      "// Para atualizar, rode a ferramenta de novo em vez de editar à mão.\n" +
+      "const FOTOS = " + JSON.stringify(fotos, null, 2) + ";\n");
+    const blob = await zip.generateAsync({ type: "blob" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "fotos.zip";
+    a.click();
+    zipBtn.disabled = false;
+  };
+})();
+</script>
+</body>
+</html>

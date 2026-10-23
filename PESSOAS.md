@@ -82,7 +82,11 @@ Cada pessoa foi conferida em uma busca na web em outubro de 2026; a coluna Fonte
 
 ## Fotos
 
-O site busca a foto de cada pessoa no artigo dela na Wikipédia (campo `wiki` no `data.js`), direto do navegador de quem visita, e mostra o crédito "Foto: Wikipédia". Amália Corrêa de Carvalho e Pedro Passos ficaram sem foto porque não encontrei um artigo com segurança de ser sobre eles; aparecem as iniciais.
+As fotos ficam no próprio projeto, em `img/pessoas/`, com autor e licença em `js/fotos.js`.
+Para gerar ou atualizar: abra `ferramentas/baixar-fotos.html` no Chrome, confira se cada
+foto é da pessoa certa, clique em "Baixar fotos.zip" e extraia o zip dentro da pasta do projeto.
+A ferramenta só aceita fotos com licença livre do Wikimedia Commons; os créditos aparecem no site.
+Amália Corrêa de Carvalho e Pedro Passos ficam sem foto (não há artigo seguro na Wikipédia).
 
 ## Cursos sem ninguém (ainda)
 

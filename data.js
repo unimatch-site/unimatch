@@ -1002,8 +1002,8 @@ const COURSES = {
 // Cada pessoa foi conferida numa busca na web em out/2026; `fonte` é a página
 // usada. Ao adicionar alguém, coloque sempre uma fonte confiável.
 // `wiki` = "idioma:Título_do_artigo" na Wikipédia (ex: "pt:Lília_Cabral").
-// O site busca a foto desse artigo direto da Wikipédia quando a página do
-// curso abre. Sem `wiki` (ou se o artigo não tiver foto), aparecem as iniciais.
+// Usado pela ferramenta ferramentas/baixar-fotos.html, que baixa a foto de
+// cada pessoa para img/pessoas/ e gera js/fotos.js com os créditos.
 const COURSE_EXTRAS = {
   "Administração": {
     pessoas: [
@@ -1217,7 +1217,7 @@ const COURSE_EXTRAS = {
   },
   "Filosofia": {
     pessoas: [
-      { nome: "Marilena Chaui", wiki: "pt:Marilena_Chaui", tipo: "area",
+      { nome: "Marilena Chaui", wiki: "pt:Marilena_Chauí", tipo: "area",
         sobre: "Filósofa, formou-se em Filosofia na USP (1965) e é professora de Filosofia da universidade desde 1967.",
         fonte: "https://www.infoescola.com/biografias/marilena-chaui/" },
       { nome: "Ricky Gervais", wiki: "en:Ricky_Gervais", tipo: "curiosidade",

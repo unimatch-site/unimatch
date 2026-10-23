@@ -84,6 +84,12 @@
   function safeUrl(u) {
     return /^(https?:|mailto:)/i.test(String(u || "")) ? esc(u) : "";
   }
+  // Fotos salvas no próprio projeto (img/pessoas/), com créditos em js/fotos.js.
+  // Esse arquivo é gerado por ferramentas/baixar-fotos.html.
+  function foto(nome) {
+    const f = typeof FOTOS !== "undefined" ? FOTOS[nome] : null;
+    return f && /^img\/pessoas\/[a-z0-9-]+\.(jpg|png|webp|gif)$/.test(f.arquivo) ? f : null;
+  }
   function initials(nome) {
     return String(nome).split(/\s+/).filter(w => /^[A-ZÀ-Ý]/.test(w)).map(w => w[0]).slice(0, 2).join("");
   }
@@ -732,12 +738,15 @@
         ${extra.pessoas && extra.pessoas.length ? `<section class="section card">
           <h2 class="section-title">⭐ Quem estudou isso</h2>
           <ul class="people">${extra.pessoas.map(pp => `<li class="person">
-            <span class="person-photo" aria-hidden="true" ${pp.wiki ? `data-wiki="${esc(pp.wiki)}"` : ""}>${esc(initials(pp.nome))}</span>
+            <span class="person-photo" aria-hidden="true">${foto(pp.nome)
+              ? `<img src="${esc(foto(pp.nome).arquivo)}" alt="" loading="lazy">`
+              : esc(initials(pp.nome))}</span>
             <div>
               <div class="person-head"><strong>${esc(pp.nome)}</strong>
                 <span class="badge ${pp.tipo === "curiosidade" ? "warn" : "accent"}">${pp.tipo === "curiosidade" ? "Curiosidade" : "Na área"}</span></div>
               <p class="muted small">${esc(pp.sobre)}${safeUrl(pp.fonte) ? ` <a href="${safeUrl(pp.fonte)}" target="_blank" rel="noopener">Fonte</a>` : ""}</p>
-              <p class="tiny person-credit hidden"></p>
+              ${foto(pp.nome) ? `<p class="tiny person-credit">Foto: ${esc(foto(pp.nome).autor)} ·
+                ${safeUrl(foto(pp.nome).origem) ? `<a href="${safeUrl(foto(pp.nome).origem)}" target="_blank" rel="noopener">${esc(foto(pp.nome).licenca)}</a>` : esc(foto(pp.nome).licenca)}</p>` : ""}
             </div>
           </li>`).join("")}</ul>
         </section>` : ""}
@@ -758,49 +767,6 @@
 
     document.getElementById("share-course").onclick = () =>
       shareOrCopy(name + " — UniMatch", siteBase() + courseUrl(name));
-    loadPhotos();
-  }
-
-  /* ── FOTOS DAS PESSOAS (Wikipédia) ──
-     Cada pessoa tem `wiki: "idioma:Título"` em data.js. A foto vem do resumo
-     público do artigo na Wikipédia, buscado pelo navegador de quem visita.
-     Se falhar (sem internet, artigo sem foto), ficam as iniciais. */
-  const photoCache = new Map();
-
-  function fetchWikiPhoto(ref) {
-    if (!photoCache.has(ref)) {
-      const [lang, title] = ref.split(/:(.+)/);
-      if (!/^(pt|en)$/.test(lang) || !title) return Promise.resolve(null);
-      const url = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
-      photoCache.set(ref, fetch(url)
-        .then(r => (r.ok ? r.json() : null))
-        .then(d => (d && d.type === "standard" && d.thumbnail && /^https:\/\/upload\.wikimedia\.org\//.test(d.thumbnail.source)
-          ? { src: d.thumbnail.source, page: d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page }
-          : null))
-        .catch(() => null));
-    }
-    return photoCache.get(ref);
-  }
-
-  function loadPhotos() {
-    app.querySelectorAll(".person-photo[data-wiki]").forEach(el => {
-      fetchWikiPhoto(el.dataset.wiki).then(photo => {
-        if (!photo || !el.isConnected) return;
-        const img = new Image();
-        img.alt = "";
-        img.referrerPolicy = "no-referrer";
-        img.onload = () => {
-          el.textContent = "";
-          el.appendChild(img);
-          const credit = el.parentElement.querySelector(".person-credit");
-          if (credit && safeUrl(photo.page)) {
-            credit.innerHTML = `Foto: <a href="${safeUrl(photo.page)}" target="_blank" rel="noopener">Wikipédia</a>`;
-            credit.classList.remove("hidden");
-          }
-        };
-        img.src = photo.src;
-      });
-    });
   }
 
   /* ── SOBRE ── */
