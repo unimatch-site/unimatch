@@ -162,6 +162,8 @@ Object.keys(COURSE_EXTRAS || {}).forEach((name) => {
   (x.pessoas || []).forEach((pp, k) => {
     if (!pp.nome || !pp.sobre) fail(`COURSE_EXTRAS "${name}": pessoa #${k + 1} sem nome ou sem texto.`);
     if (!["area", "curiosidade"].includes(pp.tipo)) fail(`COURSE_EXTRAS "${name}": tipo de "${pp.nome}" deve ser "area" ou "curiosidade".`);
+    if (pp.wiki && !/^(pt|en):\S+$/.test(pp.wiki)) fail(`COURSE_EXTRAS "${name}": wiki de "${pp.nome}" deve ser "pt:Título" ou "en:Título".`);
+    if (!pp.fonte) warn(`COURSE_EXTRAS "${name}": "${pp.nome}" está sem fonte.`);
     if (pp.fonte && !isUrl(pp.fonte)) fail(`COURSE_EXTRAS "${name}": fonte de "${pp.nome}" precisa começar com https://`);
   });
   if (x.ondeEstudar !== undefined && (!Array.isArray(x.ondeEstudar) || x.ondeEstudar.some((u) => !u.nome))) {

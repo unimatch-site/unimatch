@@ -283,6 +283,14 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.03em; line-hei
 .band-media { background: var(--warn-soft); color: var(--warn); }
 .band-baixa { background: var(--surface2); color: var(--text-muted); }
 .people { list-style: none; display: grid; gap: 14px; }
+.person { display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: start; }
+.person-photo {
+  width: 56px; height: 56px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: var(--accent-soft); color: var(--accent); font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.person-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.person-credit { margin-top: 4px; }
 .person-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 4px; }
 .rank-pct { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: var(--accent); font-variant-numeric: tabular-nums; }
 

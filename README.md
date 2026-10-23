@@ -75,7 +75,7 @@ pendente é levantar dados com fonte (veja `PROPOSTA.md`).
 - Comunicação e parcerias
 - Aspectos jurídicos e LGPD
 
-Contato: gabrielcrod14@usp.br
+Contato: gabrielcrod14@gmail.com
 
 ## Licença
 
