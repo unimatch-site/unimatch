@@ -397,6 +397,15 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.03em; line-hei
 .vet-bio { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px; }
 .vet-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
+/* ── JANELA DE E-MAIL ── */
+.mail-dialog {
+  margin: auto; /* o reset global zera a margem que centraliza o <dialog> */
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 22px;
+  width: min(420px, calc(100vw - 32px)); background: var(--surface); color: var(--text);
+  box-shadow: var(--shadow);
+}
+.mail-dialog::backdrop { background: rgba(10, 8, 30, 0.45); }
+
 /* ── TOAST ── */
 .toast {
   position: fixed; left: 50%; bottom: calc(var(--nav-h) + 16px); z-index: 50;

@@ -855,6 +855,57 @@
     if (prev) focusMain();
   }
 
+  /* ── E-MAIL ──
+     Links mailto: só funcionam se o aparelho tiver um app de e-mail configurado.
+     No computador isso costuma faltar (Chrome e Edge não fazem nada), então lá
+     o clique abre uma janela com Gmail, app de e-mail ou copiar o endereço. */
+  function parseMailto(href) {
+    const [addr, query = ""] = href.slice("mailto:".length).split("?");
+    const params = new URLSearchParams(query);
+    return { to: decodeURIComponent(addr), subject: params.get("subject") || "", body: params.get("body") || "" };
+  }
+
+  function openMailDialog(href) {
+    const m = parseMailto(href);
+    const gmail = "https://mail.google.com/mail/?view=cm&fs=1" + (m.to ? "&to=" + encodeURIComponent(m.to) : "") +
+      "&su=" + encodeURIComponent(m.subject) + "&body=" + encodeURIComponent(m.body);
+    const copyLabel = m.to ? "📋 Copiar o endereço" : "📋 Copiar o texto";
+    const dlg = document.createElement("dialog");
+    dlg.className = "mail-dialog";
+    dlg.setAttribute("aria-labelledby", "mail-title");
+    dlg.innerHTML = `
+      <h2 class="section-title" id="mail-title">Como você quer enviar?</h2>
+      ${m.to ? `<p class="muted small">Para: <strong>${esc(m.to)}</strong></p>` : `<p class="muted small">O texto já vai preenchido: é só colocar o seu e-mail como destinatário.</p>`}
+      <div class="btn-row" style="flex-direction:column;margin-top:14px">
+        <a class="btn btn-primary" href="${esc(gmail)}" target="_blank" rel="noopener">Abrir no Gmail</a>
+        <a class="btn btn-secondary" href="${esc(href)}" data-native-mail>Abrir no app de e-mail</a>
+        <button class="btn btn-secondary" type="button" data-copy>${copyLabel}</button>
+        <button class="btn btn-ghost" type="button" data-close>Cancelar</button>
+      </div>`;
+    document.body.appendChild(dlg);
+    const close = () => { dlg.close(); dlg.remove(); };
+    dlg.addEventListener("click", e => {
+      if (e.target === dlg || e.target.closest("[data-close]")) close();
+      else if (e.target.closest("[data-copy]")) {
+        const text = m.to || m.body;
+        const done = () => { toast(m.to ? "📋 Endereço copiado!" : "📋 Texto copiado!"); close(); };
+        if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, () => window.prompt("Copie:", text));
+        else { window.prompt("Copie:", text); close(); }
+      } else if (e.target.closest("a")) setTimeout(close, 0);
+    });
+    dlg.addEventListener("close", () => dlg.remove());
+    dlg.showModal();
+  }
+
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="mailto:"]');
+    if (!a || a.hasAttribute("data-native-mail")) return;
+    // No celular o mailto funciona bem; no computador mostramos as opções.
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    e.preventDefault();
+    openMailDialog(a.getAttribute("href"));
+  });
+
   /* ── TEMA ── */
   document.getElementById("theme-btn").addEventListener("click", () => {
     const root = document.documentElement;
