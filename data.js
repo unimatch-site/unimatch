@@ -1384,3 +1384,20 @@ const VETERANS = [
  * ═══════════════════════════════════════════════════════════════════════ */
 const MENTORIAS = [
 ];
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * PERGUNTA "JÁ TEM ALGUM CURSO QUE TE INTERESSA?"
+ * As opções são os próprios cursos (na ordem de COURSES), então ela é montada
+ * aqui no fim, depois de COURSES. Fica logo depois da pergunta de áreas.
+ * O curso escolhido ganha um bônus, e cursos parecidos com ele, um bônus
+ * menor (ver js/scoring.js). O aluno pode escolher até 5.
+ * ═══════════════════════════════════════════════════════════════════════ */
+QUESTIONS.splice(QUESTIONS.findIndex(q => q.dim === "areas_interesse") + 1, 0, {
+  q: "Já tem algum curso que te interessa?",
+  dim: "cursos_interesse",
+  multi: true,
+  picker: true,
+  max: 5,
+  opts: Object.keys(COURSES).map(nome => ({ t: nome, e: "🎓", v: nome }))
+    .concat([{ t: "Ainda não tenho nenhum em mente", e: "🤷", v: "nenhum", exclusive: true }])
+});

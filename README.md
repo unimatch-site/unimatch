@@ -7,9 +7,10 @@ Projeto do grupo Integra.
 
 Um site (pensado primeiro para o celular) com:
 
-- **Quiz** de 29 perguntas (24 afirmações sobre interesses + 5 de contexto) que
+- **Quiz** de 30 perguntas (24 afirmações sobre interesses + 6 de contexto) que
   separa os cursos da USP em faixas de compatibilidade, usando o modelo RIASEC de
-  John Holland. A fórmula está explicada no topo de `js/scoring.js`.
+  John Holland. O aluno pode indicar até 5 cursos que já tem interesse: eles e os
+  cursos parecidos ganham pontos extras. A fórmula está explicada no topo de `js/scoring.js`.
 - **Explorar cursos**: busca (ignora acentos), filtro por área, por nota de corte da
   FUVEST (Ampla, Escola Pública ou PPI), por salário médio e ordenação.
 - **Página de cada curso**: o que é, carreiras, mercado e salário, como ingressar
