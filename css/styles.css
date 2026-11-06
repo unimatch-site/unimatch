@@ -397,6 +397,90 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.03em; line-hei
 .vet-bio { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px; }
 .vet-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
+/* ── BUSCA DE CURSOS NO QUIZ ── */
+.picked { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
+.pick-chip {
+  min-height: 40px; padding: 8px 14px; border-radius: 99px; cursor: pointer;
+  background: var(--accent); color: var(--accent-text); border: 0; font-weight: 600; font-size: 0.88rem;
+}
+.pick-list { list-style: none; display: grid; gap: 8px; margin-top: 10px; }
+.option:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── PÁGINA INICIAL: ENTRADAS ── */
+.btn-lg { min-height: 56px; font-size: 1.08rem; }
+.entry-grid { display: grid; gap: 12px; }
+.entry-card {
+  display: grid; grid-template-columns: 48px 1fr; grid-template-rows: auto auto; column-gap: 12px;
+  align-items: center; padding: 16px; text-decoration: none; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
+  transition: transform var(--t), border-color var(--t);
+}
+.entry-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+.entry-card .entry-emoji {
+  grid-row: span 2; width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center;
+  justify-content: center; font-size: 1.5rem; background: var(--accent-soft);
+}
+
+/* ── CÓDIGO HOLLAND ── */
+.holland {
+  display: grid; grid-template-columns: 1fr; gap: 12px; align-items: center;
+  padding: 18px; margin: 12px 0; border-radius: var(--radius);
+  background: linear-gradient(135deg, #3b2bd1, #8b3fd9); color: #fff;
+}
+.holland .muted, .holland .small { color: rgba(255, 255, 255, 0.9); }
+.holland-letters { display: flex; gap: 6px; font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; }
+.holland-letters span {
+  width: 46px; height: 52px; border-radius: 12px; background: rgba(255, 255, 255, 0.18);
+  display: flex; align-items: center; justify-content: center;
+}
+.holland.flat .holland-letters { width: 52px; height: 52px; border-radius: 12px; background: rgba(255,255,255,0.18); justify-content: center; align-items: center; }
+.holland-title { font-weight: 700; margin-bottom: 2px; }
+details.profile-box > summary { cursor: pointer; font-weight: 600; color: var(--text); min-height: 32px; }
+
+/* ── MOTIVOS ── */
+.rank-why { display: block; font-size: 0.82rem; color: var(--good); margin-bottom: 4px; }
+.why-list { list-style: none; display: grid; gap: 6px; margin-top: 8px; font-size: 0.9rem; }
+.why-list li { padding-left: 26px; position: relative; color: var(--text-muted); }
+.why-list li::before { position: absolute; left: 0; top: 0; font-weight: 700; }
+.why-list.good li::before { content: "✓"; color: var(--good); }
+.why-list.warn li::before { content: "!"; color: var(--warn); left: 6px; }
+.decided-card { border: 2px solid var(--accent); }
+.wild-card { background: linear-gradient(135deg, var(--accent-soft), var(--surface)); }
+.steps-list { padding-left: 20px; display: grid; gap: 10px; color: var(--text-muted); font-size: 0.92rem; }
+.steps-list strong { color: var(--text); }
+
+/* ── MODO MATCH ── */
+.match-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+.match-head .pill { text-decoration: none; white-space: nowrap; }
+.match-stage { position: relative; touch-action: pan-y; }
+.match-card {
+  position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 22px;
+  padding: 22px; box-shadow: 0 14px 40px rgba(40, 30, 120, 0.16); user-select: none; cursor: grab;
+  transition: transform 0.25s ease, opacity 0.25s ease; touch-action: pan-y;
+}
+.match-card.dragging { transition: none; cursor: grabbing; }
+.match-card.fly-right { transform: translateX(130%) rotate(18deg); opacity: 0; }
+.match-card.fly-left { transform: translateX(-130%) rotate(-18deg); opacity: 0; }
+.match-area { font-size: 0.85rem; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+.match-name { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; }
+.match-desc { color: var(--text-muted); }
+.match-more { display: inline-block; margin-top: 14px; font-weight: 600; min-height: 32px; }
+.match-stamp {
+  position: absolute; top: 18px; padding: 6px 12px; border: 3px solid; border-radius: 10px;
+  font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; opacity: 0; transition: opacity 0.15s;
+}
+.match-stamp.like { right: 18px; color: var(--good); transform: rotate(10deg); }
+.match-stamp.nope { left: 18px; color: var(--bad); transform: rotate(-10deg); }
+.match-card.show-like .match-stamp.like, .match-card.show-nope .match-stamp.nope { opacity: 1; }
+.match-actions { display: flex; justify-content: center; gap: 28px; margin: 20px 0 8px; }
+.match-btn {
+  width: 68px; height: 68px; border-radius: 50%; font-size: 1.7rem; cursor: pointer;
+  background: var(--surface); box-shadow: var(--shadow); border: 2px solid var(--border);
+}
+.match-btn.like { color: #e0245e; border-color: rgba(224, 36, 94, 0.4); }
+.match-btn.nope { color: var(--text-muted); }
+.match-btn:active { transform: scale(0.94); }
+
 /* ── JANELA DE E-MAIL ── */
 .mail-dialog {
   margin: auto; /* o reset global zera a margem que centraliza o <dialog> */
@@ -434,6 +518,10 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.03em; line-hei
   .stat-grid { grid-template-columns: repeat(3, 1fr); }
   .vet-grid { grid-template-columns: 1fr 1fr; }
   .site-footer { grid-template-columns: 1fr 1fr; }
+  .entry-grid { grid-template-columns: repeat(3, 1fr); }
+  .holland { grid-template-columns: auto 1fr; }
+  .entry-card { grid-template-columns: 1fr; text-align: left; row-gap: 6px; }
+  .entry-card .entry-emoji { grid-row: auto; }
   .toast { bottom: 24px; }
 }
 

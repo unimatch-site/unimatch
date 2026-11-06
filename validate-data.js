@@ -59,7 +59,12 @@ QUESTIONS.filter((q) => q.dim === "likert").forEach((q) => { porLetra[q.letra] =
   if (!porLetra[l]) fail(`Nenhuma afirmação do quiz mede a letra ${l}.`);
   else if (porLetra[l] !== porLetra.R) warn(`A letra ${l} tem ${porLetra[l]} afirmações e a R tem ${porLetra.R}: o ideal é o mesmo número para todas.`);
 });
-["areas_interesse", "cursos_interesse", "math", "tech", "duration", "salary"].forEach((d) => {
+QUESTIONS.forEach((q, i) => {
+  if (!q.showIf) return;
+  if (!QUESTIONS.slice(0, i).some((p) => p.dim === q.showIf.dim)) fail(`Pergunta "${q.dim}" depende de "${q.showIf.dim}", que precisa vir antes.`);
+  if (q.opts.filter((o) => o.skip).length !== 1) fail(`Pergunta condicional "${q.dim}" precisa de exatamente uma opção com skip: true.`);
+});
+["areas_interesse", "cursos_interesse", "certeza", "math", "tech", "duration", "salary"].forEach((d) => {
   if (!QUESTIONS.some((q) => q.dim === d)) fail(`Falta a pergunta de contexto "${d}" no quiz.`);
 });
 

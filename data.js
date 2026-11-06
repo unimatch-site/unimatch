@@ -83,6 +83,9 @@ const DATA_LAST_REVIEWED = "";
 
 // Configurações gerais do site (contato, redes). Edite aqui, não no HTML.
 const SITE_CONFIG = {
+  // Endereço oficial do site: aparece no card de resultado para compartilhar.
+  // Se o site mudar de endereço, troque aqui (e nas tags og: do index.html).
+  siteUrl: "https://unimatch-pi.vercel.app",
   contatoEmail: "gabrielcrod14@gmail.com",
   instagram: "https://www.instagram.com/integrausp/",
   // Link de um formulário (ex: Google Forms) para "Reportar problema /
@@ -1400,4 +1403,19 @@ QUESTIONS.splice(QUESTIONS.findIndex(q => q.dim === "areas_interesse") + 1, 0, {
   max: 5,
   opts: Object.keys(COURSES).map(nome => ({ t: nome, e: "🎓", v: nome }))
     .concat([{ t: "Ainda não tenho nenhum em mente", e: "🤷", v: "nenhum", exclusive: true }])
+});
+
+// Pergunta de acompanhamento: só aparece para quem escolheu algum curso acima.
+// A resposta muda o tamanho do bônus (15 / 30 / 45 pontos) e, em "Já decidi",
+// o resultado passa a começar pelo curso escolhido (ver js/app.js).
+QUESTIONS.splice(QUESTIONS.findIndex(q => q.dim === "cursos_interesse") + 1, 0, {
+  q: "Quanto você já está decidido(a) sobre esse curso?",
+  dim: "certeza",
+  showIf: { dim: "cursos_interesse", notOnly: ["nenhum"] },
+  opts: [
+    { t:"Só curiosidade, quero ver outras opções", e:"🤔", v:"1" },
+    { t:"Tenho bastante interesse",                e:"💜", v:"2" },
+    { t:"Já decidi, é esse que eu quero!",         e:"🎯", v:"3" },
+    { t:"(pulada)", e:"", v:"na", skip:true }
+  ]
 });

@@ -7,7 +7,8 @@ Projeto do grupo Integra.
 
 Um site (pensado primeiro para o celular) com:
 
-- **Quiz** de 30 perguntas (24 afirmações sobre interesses + 6 de contexto) que
+- **Quiz** de 30 perguntas (24 afirmações sobre interesses + 6 de contexto, e uma 31ª
+  para quem já tem um curso em mente) que
   separa os cursos da USP em faixas de compatibilidade, usando o modelo RIASEC de
   John Holland. O aluno pode indicar até 5 cursos que já tem interesse: eles e os
   cursos parecidos ganham pontos extras. A fórmula está explicada no topo de `js/scoring.js`.
@@ -16,7 +17,11 @@ Um site (pensado primeiro para o celular) com:
 - **Página de cada curso**: o que é, carreiras, mercado e salário, como ingressar
   (FUVEST por modalidade, SISU, Provão Paulista, vagas olímpicas), onde estudar,
   pessoas famosas que estudaram aquilo e veteranos/mentorias.
-- **Resultados**: link compartilhável, envio por e-mail e seção "Fale com um veterano".
+- **Resultados**: código Holland (ex.: "SIA"), motivos de cada curso em frases, modo
+  "Já decidi" para quem já escolheu, curso "fora da caixa", próximos passos, imagem para
+  Stories, WhatsApp, link e e-mail, e seção "Fale com um veterano".
+- **Modo Match**: deslizar pelos cursos e guardar os que chamarem atenção.
+- **Funciona sem internet** depois da primeira visita e pode ser instalado como app (`sw.js`, `manifest.webmanifest`).
 - Favoritos, tema claro/escuro e navegação acessível por teclado e leitor de tela.
 
 ## Motivação
@@ -36,6 +41,7 @@ de forma gratuita, acessível e baseada em dados.
 | `js/app.js` | Telas e navegação | Dev |
 | `validate-data.js` | Confere se `data.js` está consistente | — |
 | `tests/` | Testes automáticos | — |
+| `ANALISE.md` | Comparação com outros testes e revisão da metodologia | Toda a equipe |
 | `js/fotos.js` + `img/pessoas/` | Fotos das pessoas famosas e seus créditos | Gerados pela ferramenta abaixo |
 | `ferramentas/baixar-fotos.html` | Baixa as fotos (licença livre) da Wikipédia e gera o `fotos.zip` | Qualquer pessoa: abrir no navegador |
 
