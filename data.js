@@ -1001,7 +1001,8 @@ const COURSES = {
  * }
  * ═══════════════════════════════════════════════════════════════════════ */
 // PESSOAS QUE ESTUDARAM CADA CURSO (seção "Quem estudou isso" da página do curso)
-// tipo: "area" = trabalha na área · "curiosidade" = ficou famosa em outra coisa.
+// tipo: "area" = trabalha na área · "curiosidade" = ficou famosa em outra coisa ·
+//       "referencia" = nome importante da área (pode não ter feito esta graduação).
 // Cada pessoa foi conferida numa busca na web em out/2026; `fonte` é a página
 // usada. Ao adicionar alguém, coloque sempre uma fonte confiável.
 // `wiki` = "idioma:Título_do_artigo" na Wikipédia (ex: "pt:Lília_Cabral").
@@ -1352,6 +1353,162 @@ const COURSE_EXTRAS = {
       { nome: "Maria Fernanda Cândido", wiki: "pt:Maria_Fernanda_Cândido", tipo: "curiosidade",
         sobre: "A atriz de “Terra Nostra” formou-se em Terapia Ocupacional na USP.",
         fonte: "https://www.purepeople.com.br/famosos/maria-fernanda-candido_p3424" }
+    ]
+  },
+  // ── Adicionados em nov/2026 (tipo "referencia" = nome importante da área,
+  //    mesmo que não tenha feito exatamente esta graduação) ──
+  "Artes Visuais": {
+    pessoas: [
+      { nome: "Beatriz Milhazes", wiki: "en:Beatriz_Milhazes", tipo: "area",
+        sobre: "Pintora carioca da chamada Geração 80. Cursou Comunicação Social e depois estudou na Escola de Artes Visuais do Parque Lage, onde também deu aulas de pintura.",
+        fonte: "https://www.maxhetzler.com/artists/beatriz-milhazes" }
+    ]
+  },
+  "Biotecnologia": {
+    pessoas: [
+      { nome: "Jennifer Doudna", wiki: "en:Jennifer_Doudna", tipo: "referencia",
+        sobre: "Bioquímica (Pomona College, 1985; doutorado em Harvard, 1989). Ganhou o Nobel de Química de 2020, com Emmanuelle Charpentier, pela técnica CRISPR de edição de genes.",
+        fonte: "https://www.harvardmagazine.com/2020/10/jennifer-a-doudna-ph-d-89-shares-chemistry-nobel-prize" }
+    ]
+  },
+  "Ciências Biomédicas": {
+    pessoas: [
+      { nome: "Jaqueline Goes de Jesus", wiki: "pt:Jaqueline_Goes_de_Jesus", tipo: "area",
+        sobre: "Biomédica formada na Escola Bahiana de Medicina e Saúde Pública. Em 2020, fez parte da equipe que sequenciou o genoma do novo coronavírus no Brasil em cerca de 48 horas.",
+        fonte: "https://museucatavento.org.br/mulheres-na-ciencia/jaqueline-goes" }
+    ]
+  },
+  "Ciência de Dados": {
+    pessoas: [
+      { nome: "DJ Patil", wiki: "en:DJ_Patil", tipo: "referencia",
+        sobre: "Doutor em Matemática Aplicada (Universidade de Maryland), ajudou a popularizar o termo “cientista de dados” e foi o primeiro Cientista-Chefe de Dados do governo dos EUA (2015).",
+        fonte: "https://obamawhitehouse.archives.gov/blog/2015/02/18/white-house-names-dr-dj-patil-first-us-chief-data-scientist" }
+    ]
+  },
+  "Engenharia Agronômica": {
+    pessoas: [
+      { nome: "Johanna Döbereiner", wiki: "en:Johanna_Döbereiner", tipo: "area",
+        sobre: "Agrônoma pioneira no estudo de bactérias que fixam o nitrogênio do ar. Essa pesquisa permitiu cultivar soja no Brasil sem adubo nitrogenado.",
+        fonte: "https://revistapesquisa.fapesp.br/os-primeiros-inoculantes/" }
+    ]
+  },
+  "Engenharia de Minas": {
+    pessoas: [
+      { nome: "Herbert Hoover", wiki: "en:Herbert_Hoover", tipo: "curiosidade",
+        sobre: "Formou-se em Geologia em Stanford (1895), trabalhou como engenheiro de minas na Austrália e na China e depois foi presidente dos EUA (1929–1933).",
+        fonte: "https://millercenter.org/president/hoover/life-before-the-presidency" }
+    ]
+  },
+  "Engenharia de Petróleo": {
+    pessoas: [
+      { nome: "Guilherme Estrella", tipo: "referencia",
+        sobre: "Geólogo da Petrobras desde 1965. Foi diretor de Exploração e Produção (2003–2012), período em que a empresa anunciou as descobertas do pré-sal.",
+        fonte: "https://www.confea.org.br/guilherme-de-oliveira-estrella" }
+    ]
+  },
+  "Engenharia Florestal": {
+    pessoas: [
+      { nome: "Norman Borlaug", wiki: "en:Norman_Borlaug", tipo: "area",
+        sobre: "Formou-se em Engenharia Florestal na Universidade de Minnesota (1937). Ganhou o Nobel da Paz de 1970 por criar variedades de trigo que aumentaram muito a produção de alimentos.",
+        fonte: "https://www.nobelprize.org/prizes/peace/1970/borlaug/biographical/" }
+    ]
+  },
+  "Estatística": {
+    pessoas: [
+      { nome: "Florence Nightingale", wiki: "en:Florence_Nightingale", tipo: "referencia",
+        sobre: "Conhecida como fundadora da enfermagem moderna, usou gráficos (o “diagrama de rosa”) para mostrar as causas de morte de soldados. Foi a primeira mulher eleita para a Sociedade de Estatística de Londres.",
+        fonte: "https://www.kcl.ac.uk/people/florence-nightingale" }
+    ]
+  },
+  "Finanças e Negócios": {
+    pessoas: [
+      { nome: "Warren Buffett", wiki: "en:Warren_Buffett", tipo: "area",
+        sobre: "Um dos investidores mais conhecidos do mundo. Formou-se em Administração na Universidade de Nebraska e fez mestrado em Economia em Columbia (1951), onde foi aluno de Benjamin Graham.",
+        fonte: "https://en.wikipedia.org/wiki/Warren_Buffett" }
+    ]
+  },
+  "Física Médica": {
+    pessoas: [
+      { nome: "Rosalyn Yalow", wiki: "en:Rosalyn_Sussman_Yalow", tipo: "area",
+        sobre: "Física nuclear americana. Desenvolveu, com Solomon Berson, o radioimunoensaio, que mede quantidades mínimas de hormônios no sangue, e ganhou o Nobel de Medicina de 1977.",
+        fonte: "https://www.nobelprize.org/prizes/medicine/1977/yalow/facts/" }
+    ]
+  },
+  "Geofísica": {
+    pessoas: [
+      { nome: "Inge Lehmann", wiki: "en:Inge_Lehmann", tipo: "referencia",
+        sobre: "Sismóloga dinamarquesa. Em 1936, analisando ondas de terremotos, descobriu que a Terra tem um núcleo interno sólido.",
+        fonte: "https://www.amnh.org/learn-teach/curriculum-collections/earth-inside-and-out/inge-lehmann-discoverer-of-the-earth-s-inner-core" }
+    ]
+  },
+  "Marketing": {
+    pessoas: [
+      { nome: "Philip Kotler", wiki: "en:Philip_Kotler", tipo: "referencia",
+        sobre: "Doutor em Economia pelo MIT (1956), é chamado de “pai do marketing moderno”. Seu livro “Administração de Marketing” (1967) é usado em cursos do mundo todo.",
+        fonte: "https://alum.mit.edu/slice/mit-alum-known-father-modern-marketing" }
+    ]
+  },
+  "Matemática Aplicada e Computacional": {
+    pessoas: [
+      { nome: "Katherine Johnson", wiki: "en:Katherine_Johnson", tipo: "area",
+        sobre: "Formou-se em Matemática e Francês (1937) e, na NASA, calculou trajetórias de voos espaciais. Sua história inspirou o filme “Estrelas Além do Tempo”.",
+        fonte: "https://wvencyclopedia.org/entries/2347" }
+    ]
+  },
+  "Meteorologia": {
+    pessoas: [
+      { nome: "Carlos Nobre", wiki: "pt:Carlos_Nobre", tipo: "referencia",
+        sobre: "Formado em Engenharia Eletrônica pelo ITA e doutor em Meteorologia pelo MIT (1983). Climatologista do INPE, estuda o clima e o futuro da Amazônia.",
+        fonte: "https://revistapesquisa.fapesp.br/o-engenheiro-da-floresta/" }
+    ]
+  },
+  "Nutrição": {
+    pessoas: [
+      { nome: "Sophie Deram", tipo: "area",
+        sobre: "Engenheira agrônoma e nutricionista franco-brasileira, doutora pela Faculdade de Medicina da USP. Autora de “O peso das dietas” (2018), que critica as dietas restritivas.",
+        fonte: "https://institutodelongevidade.org/saude-e-bem-estar/alimentacao/diga-nao-as-dietas-restritivas-defende-nutricionista-sophie-deram" }
+    ]
+  },
+  "Oceanografia": {
+    pessoas: [
+      { nome: "Sylvia Earle", wiki: "en:Sylvia_Earle", tipo: "referencia",
+        sobre: "Bióloga marinha e oceanógrafa, doutora em Botânica pela Universidade Duke (1966). Foi cientista-chefe da NOAA, a agência de oceanos e clima dos EUA.",
+        fonte: "https://gradschool.duke.edu/about/news/sylvia-earle-face-marine-biology-receives-distinguished-alumni-award/" }
+    ]
+  },
+  "Pedagogia": {
+    pessoas: [
+      { nome: "Paulo Freire", wiki: "en:Paulo_Freire", tipo: "referencia",
+        sobre: "Formado em Direito, dedicou a vida à educação e criou um método de alfabetização de adultos. É o Patrono da Educação Brasileira (Lei 12.612/2012).",
+        fonte: "https://www2.camara.leg.br/legin/fed/lei/2012/lei-12612-13-abril-2012-612708-publicacaooriginal-135760-pl.html" }
+    ]
+  },
+  "Relações Públicas": {
+    pessoas: [
+      { nome: "Edward Bernays", wiki: "en:Edward_Bernays", tipo: "referencia",
+        sobre: "Chamado de “pai das relações públicas”, escreveu em 1923 um dos primeiros livros sobre a área. Era sobrinho de Sigmund Freud. Suas técnicas de persuasão também são muito criticadas.",
+        fonte: "https://en.wikipedia.org/wiki/Edward_Bernays" }
+    ]
+  },
+  "Saúde Pública": {
+    pessoas: [
+      { nome: "Oswaldo Cruz", wiki: "en:Oswaldo_Cruz", tipo: "referencia",
+        sobre: "Médico sanitarista. Como Diretor-Geral de Saúde Pública (a partir de 1903), comandou campanhas contra a febre amarela, a peste e a varíola no Rio de Janeiro. Dá nome à Fiocruz.",
+        fonte: "https://fiocruz.br/node/19059" }
+    ]
+  },
+  "Têxtil e Moda": {
+    pessoas: [
+      { nome: "Alexandre Herchcovitch", wiki: "pt:Alexandre_Herchcovitch", tipo: "area",
+        sobre: "Estilista paulistano formado em Design de Moda pela Faculdade Santa Marcelina.",
+        fonte: "https://museujudaicosp.org.br/?p=4872" }
+    ]
+  },
+  "Zootecnia": {
+    pessoas: [
+      { nome: "Temple Grandin", wiki: "en:Temple_Grandin", tipo: "referencia",
+        sobre: "Doutora em Ciência Animal (Universidade de Illinois, 1989). Projeta instalações de manejo de gado que reduzem o estresse dos animais e é professora na Colorado State University.",
+        fonte: "https://news.illinois.edu/u-of-i-alumna-temple-grandin-elected-to-the-american-academy-of-arts-and-sciences/" }
     ]
   }
 };

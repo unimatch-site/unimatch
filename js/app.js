@@ -1083,6 +1083,18 @@
   }
 
   /* ── DETALHE DO CURSO ── */
+  // Selo de cada pessoa na seção de pessoas da página do curso.
+  const PERSON_TIPO = {
+    area: { label: "Na área", cls: "accent" },
+    curiosidade: { label: "Curiosidade", cls: "warn" },
+    referencia: { label: "Referência", cls: "good" }
+  };
+  function peopleTitle(pessoas) {
+    const refs = pessoas.filter(p => p.tipo === "referencia").length;
+    if (refs === pessoas.length) return pessoas.length > 1 ? "Referências na área" : "Referência na área";
+    return refs ? "Quem estudou isso ou é referência" : "Quem estudou isso";
+  }
+
   function renderCourse(slug) {
     const name = SLUG_TO_NAME[slug];
     if (!name) {
@@ -1197,14 +1209,14 @@
         </section>
 
         ${extra.pessoas && extra.pessoas.length ? `<section class="section card">
-          <h2 class="section-title">⭐ Quem estudou isso</h2>
+          <h2 class="section-title">⭐ ${peopleTitle(extra.pessoas)}</h2>
           <ul class="people">${extra.pessoas.map(pp => `<li class="person">
             <span class="person-photo" aria-hidden="true">${foto(pp.nome)
               ? `<img src="${esc(foto(pp.nome).arquivo)}" alt="" loading="lazy">`
               : esc(initials(pp.nome))}</span>
             <div>
               <div class="person-head"><strong>${esc(pp.nome)}</strong>
-                <span class="badge ${pp.tipo === "curiosidade" ? "warn" : "accent"}">${pp.tipo === "curiosidade" ? "Curiosidade" : "Na área"}</span></div>
+                <span class="badge ${PERSON_TIPO[pp.tipo] ? PERSON_TIPO[pp.tipo].cls : "accent"}">${PERSON_TIPO[pp.tipo] ? PERSON_TIPO[pp.tipo].label : "Na área"}</span></div>
               <p class="muted small">${esc(pp.sobre)}${safeUrl(pp.fonte) ? ` <a href="${safeUrl(pp.fonte)}" target="_blank" rel="noopener">Fonte</a>` : ""}</p>
               ${foto(pp.nome) ? `<p class="tiny person-credit">Foto: ${esc(foto(pp.nome).autor)} ·
                 ${safeUrl(foto(pp.nome).origem) ? `<a href="${safeUrl(foto(pp.nome).origem)}" target="_blank" rel="noopener">${esc(foto(pp.nome).licenca)}</a>` : esc(foto(pp.nome).licenca)}</p>` : ""}

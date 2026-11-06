@@ -1,4 +1,4 @@
-// Gerado por ferramentas/baixar-fotos.html em 23/10/2026.
+// Gerado por ferramentas/baixar-fotos.html em 06/11/2026.
 // Fotos do Wikimedia Commons. Os créditos (autor e licença) aparecem no site e são obrigatórios.
 // Para atualizar, rode a ferramenta de novo em vez de editar à mão.
 const FOTOS = {
@@ -15,6 +15,13 @@ const FOTOS = {
     "licenca": "Public domain",
     "licencaUrl": "",
     "origem": "https://commons.wikimedia.org/wiki/File:Albert_Einstein_Head_cleaned.jpg"
+  },
+  "Alexandre Herchcovitch": {
+    "arquivo": "img/pessoas/alexandre-herchcovitch.jpg",
+    "autor": "HERCHCOVITCH",
+    "licenca": "CC BY-SA 4.0",
+    "licencaUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "origem": "https://commons.wikimedia.org/wiki/File:Portrait_Alexandre_Herchcovitch.tif"
   },
   "Arnold Schwarzenegger": {
     "arquivo": "img/pessoas/arnold-schwarzenegger.jpg",
@@ -93,6 +100,13 @@ const FOTOS = {
     "licencaUrl": "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3",
     "origem": "https://commons.wikimedia.org/wiki/File:David_Attenborough_in_2025.jpg"
   },
+  "DJ Patil": {
+    "arquivo": "img/pessoas/dj-patil.jpg",
+    "autor": "Christopher Michel",
+    "licenca": "CC BY-SA 4.0",
+    "licencaUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "origem": "https://commons.wikimedia.org/wiki/File:DJ_Patil_in_2021_by_Christopher_Michel.jpg"
+  },
   "Doc Holliday": {
     "arquivo": "img/pessoas/doc-holliday.jpg",
     "autor": "Template:D.F. Mitchell",
@@ -107,6 +121,13 @@ const FOTOS = {
     "licencaUrl": "",
     "origem": "https://commons.wikimedia.org/wiki/File:Drauzio_Varella.jpg"
   },
+  "Edward Bernays": {
+    "arquivo": "img/pessoas/edward-bernays.jpg",
+    "autor": "Bain News Service",
+    "licenca": "Public domain",
+    "licencaUrl": "",
+    "origem": "https://commons.wikimedia.org/wiki/File:Edward_Bernays_cropped.png"
+  },
   "Esther Duflo": {
     "arquivo": "img/pessoas/esther-duflo.jpg",
     "autor": "US Embassy Sweden",
@@ -115,7 +136,7 @@ const FOTOS = {
     "origem": "https://commons.wikimedia.org/wiki/File:Nobel_9_Dec_2019_Esther_Duflo_(cropped).jpg"
   },
   "Fátima Bernardes": {
-    "arquivo": "img/pessoas/fatima-bernardes.png",
+    "arquivo": "img/pessoas/fatima-bernardes.jpg",
     "autor": "Multishow",
     "licenca": "CC BY 3.0",
     "licencaUrl": "https://creativecommons.org/licenses/by/3.0",
@@ -134,6 +155,13 @@ const FOTOS = {
     "licenca": "CC BY-SA 3.0",
     "licencaUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "origem": "https://commons.wikimedia.org/wiki/File:Fernando_Meirelles_2012_(cropped).JPG"
+  },
+  "Florence Nightingale": {
+    "arquivo": "img/pessoas/florence-nightingale.jpg",
+    "autor": "Henry Hering (1814-1893)",
+    "licenca": "Public domain",
+    "licencaUrl": "",
+    "origem": "https://commons.wikimedia.org/wiki/File:Florence_Nightingale_(H_Hering_NPG_x82368).jpg"
   },
   "Gilberto Gil": {
     "arquivo": "img/pessoas/gilberto-gil.jpg",
@@ -156,6 +184,13 @@ const FOTOS = {
     "licencaUrl": "",
     "origem": "https://commons.wikimedia.org/wiki/File:Inezita_Barroso%2C_1956.tif"
   },
+  "Inge Lehmann": {
+    "arquivo": "img/pessoas/inge-lehmann.jpg",
+    "autor": "Even Neuhaus (6.2.1863-20.4.1946)",
+    "licenca": "Public domain",
+    "licencaUrl": "",
+    "origem": "https://commons.wikimedia.org/wiki/File:Inge_Lehman.jpg"
+  },
   "Ivan Lins": {
     "arquivo": "img/pessoas/ivan-lins.jpg",
     "autor": "José Goulão from Lisbon, Portugal",
@@ -177,12 +212,33 @@ const FOTOS = {
     "licencaUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "origem": "https://commons.wikimedia.org/wiki/File:JackWelchApril2012.jpg"
   },
+  "Jaqueline Goes de Jesus": {
+    "arquivo": "img/pessoas/jaqueline-goes-de-jesus.jpg",
+    "autor": "Raisa Mesquita/Câmara dos Deputados",
+    "licenca": "CC BY 4.0",
+    "licencaUrl": "https://creativecommons.org/licenses/by/4.0",
+    "origem": "https://commons.wikimedia.org/wiki/File:Jaqueline_Goes_-_Pr%C3%AAmio_Mulheres_na_Ci%C3%AAncia.jpg"
+  },
   "Jeff Bezos": {
     "arquivo": "img/pessoas/jeff-bezos.jpg",
     "autor": "SECWAR",
     "licenca": "Public domain",
     "licencaUrl": "",
     "origem": "https://commons.wikimedia.org/wiki/File:260202-D-PM193-2205_SECWAR_Arsenal_of_Freedom_Tour_-_Florida_(3x4_cropped_on_Bezos_and_rotated).jpg"
+  },
+  "Jennifer Doudna": {
+    "arquivo": "img/pessoas/jennifer-doudna.jpg",
+    "autor": "Christopher Michel",
+    "licenca": "CC BY-SA 4.0",
+    "licencaUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "origem": "https://commons.wikimedia.org/wiki/File:Jennifer_Doudna_by_Christopher_Michel_in_2023_01.jpg"
+  },
+  "Johanna Döbereiner": {
+    "arquivo": "img/pessoas/johanna-dobereiner.jpg",
+    "autor": "Unknown authorUnknown author",
+    "licenca": "CC BY-SA 4.0",
+    "licencaUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "origem": "https://commons.wikimedia.org/wiki/File:Johanna-D%C3%B6bereiner.jpg"
   },
   "John Pemberton": {
     "arquivo": "img/pessoas/john-pemberton.jpg",
@@ -197,6 +253,13 @@ const FOTOS = {
     "licenca": "CC BY-SA 3.0",
     "licencaUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "origem": "https://commons.wikimedia.org/wiki/File:Jonathan_Ive_(OTRS).jpg"
+  },
+  "Katherine Johnson": {
+    "arquivo": "img/pessoas/katherine-johnson.jpg",
+    "autor": "NASA",
+    "licenca": "Public domain",
+    "licencaUrl": "",
+    "origem": "https://commons.wikimedia.org/wiki/File:Katherine_Johnson_1983.jpg"
   },
   "Kenny G": {
     "arquivo": "img/pessoas/kenny-g.jpg",
@@ -310,12 +373,40 @@ const FOTOS = {
     "licencaUrl": "https://creativecommons.org/licenses/by/2.0",
     "origem": "https://commons.wikimedia.org/wiki/File:Neil_DeGrasse_Tyson_(2023).jpg"
   },
+  "Norman Borlaug": {
+    "arquivo": "img/pessoas/norman-borlaug.jpg",
+    "autor": "Ben Zinner, USAID",
+    "licenca": "Public domain",
+    "licencaUrl": "",
+    "origem": "https://commons.wikimedia.org/wiki/File:Norman_Borlaug%2C_2004_(cropped).jpg"
+  },
   "Oscar Niemeyer": {
     "arquivo": "img/pessoas/oscar-niemeyer.jpg",
     "autor": "Unknown (Mondadori Publishers)",
     "licenca": "Public domain",
     "licencaUrl": "",
     "origem": "https://commons.wikimedia.org/wiki/File:Oscar_Niemeyer_1968b.jpg"
+  },
+  "Oswaldo Cruz": {
+    "arquivo": "img/pessoas/oswaldo-cruz.jpg",
+    "autor": "Autor desconhecido",
+    "licenca": "Public domain",
+    "licencaUrl": "",
+    "origem": "https://commons.wikimedia.org/wiki/File:Oswaldo_cruz.jpg"
+  },
+  "Paulo Freire": {
+    "arquivo": "img/pessoas/paulo-freire.jpg",
+    "autor": "Slobodan Dimitro",
+    "licenca": "CC BY-SA 3.0",
+    "licencaUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "origem": "https://commons.wikimedia.org/wiki/File:Paulo_Freire_1977.jpg"
+  },
+  "Philip Kotler": {
+    "arquivo": "img/pessoas/philip-kotler.jpg",
+    "autor": "Jack11 Poland",
+    "licenca": "CC BY-SA 3.0",
+    "licencaUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "origem": "https://commons.wikimedia.org/wiki/File:Kotler-DSC_0510.jpg"
   },
   "Príncipe William": {
     "arquivo": "img/pessoas/principe-william.jpg",
@@ -330,6 +421,13 @@ const FOTOS = {
     "licenca": "CC BY 2.0",
     "licencaUrl": "https://creativecommons.org/licenses/by/2.0",
     "origem": "https://commons.wikimedia.org/wiki/File:GervaisPall230921_(15_of_17)_(51527411486)_(cropped_2).jpg"
+  },
+  "Rosalyn Yalow": {
+    "arquivo": "img/pessoas/rosalyn-yalow.jpg",
+    "autor": "US Information Agency (see image credits at the end)",
+    "licenca": "Public domain",
+    "licencaUrl": "",
+    "origem": "https://commons.wikimedia.org/wiki/File:Rosalyn_Yalow.jpg"
   },
   "Rowan Atkinson": {
     "arquivo": "img/pessoas/rowan-atkinson.jpg",
@@ -358,6 +456,20 @@ const FOTOS = {
     "licenca": "CC BY-SA 4.0",
     "licencaUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "origem": "https://commons.wikimedia.org/wiki/File:MKr25402_Steven_Spielberg_(Berlinale_2023)_(3x4_cropped).jpg"
+  },
+  "Sylvia Earle": {
+    "arquivo": "img/pessoas/sylvia-earle.jpg",
+    "autor": "Cmichel67",
+    "licenca": "CC BY-SA 4.0",
+    "licencaUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "origem": "https://commons.wikimedia.org/wiki/File:Sylvia_Earle_in_2026_02.jpg"
+  },
+  "Temple Grandin": {
+    "arquivo": "img/pessoas/temple-grandin.jpg",
+    "autor": "Jonathunder",
+    "licenca": "GFDL 1.2",
+    "licencaUrl": "http://www.gnu.org/licenses/old-licenses/fdl-1.2.html",
+    "origem": "https://commons.wikimedia.org/wiki/File:TempleGrandin.jpg"
   },
   "Tom Scholz": {
     "arquivo": "img/pessoas/tom-scholz.jpg",
@@ -393,6 +505,13 @@ const FOTOS = {
     "licenca": "CC BY-SA 4.0",
     "licencaUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "origem": "https://commons.wikimedia.org/wiki/File:Wagner_Moura-6546_(3x4).jpg"
+  },
+  "Warren Buffett": {
+    "arquivo": "img/pessoas/warren-buffett.jpg",
+    "autor": "USA International Trade Administration",
+    "licenca": "Public domain",
+    "licencaUrl": "",
+    "origem": "https://commons.wikimedia.org/wiki/File:Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit_(cropped).jpg"
   },
   "William Bonner": {
     "arquivo": "img/pessoas/william-bonner.jpg",

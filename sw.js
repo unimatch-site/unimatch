@@ -6,7 +6,7 @@
  * atualização no GitHub aparece normalmente para quem está online.
  * Se mudar a lista de arquivos abaixo, troque o número da versão.
  */
-const CACHE = "unimatch-v10";
+const CACHE = "unimatch-v12";
 const CORE = ["./", "index.html", "data.js", "css/styles.css", "js/scoring.js", "js/app.js", "js/fotos.js",
   "manifest.webmanifest", "img/icone-192.png"];
 

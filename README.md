@@ -16,7 +16,7 @@ Um site (pensado primeiro para o celular) com:
   FUVEST (Ampla, Escola Pública ou PPI), por salário médio e ordenação.
 - **Página de cada curso**: o que é, carreiras, mercado e salário, como ingressar
   (FUVEST por modalidade, SISU, Provão Paulista, vagas olímpicas), onde estudar,
-  pessoas famosas que estudaram aquilo e veteranos/mentorias.
+  pessoas que estudaram aquilo (ou são referência na área) e veteranos/mentorias.
 - **Resultados**: código Holland (ex.: "SIA"), motivos de cada curso em frases, modo
   "Já decidi" para quem já escolheu, curso "fora da caixa", próximos passos, imagem para
   Stories, WhatsApp, link e e-mail, e seção "Fale com um veterano".
